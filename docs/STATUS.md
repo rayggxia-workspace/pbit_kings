@@ -2,14 +2,14 @@
 
 公开仓库已创建，业务代码通过任务 PR 待审后合入；原库保留。
 
-- 当前阶段：Issue #1 迁移本地准备
+- 当前阶段：Issue #1 代码已推送，[PR #2](https://github.com/rayggxia-workspace/pbit_kings/pull/2) 待审，未合并
 - 更新日期：2026-10-17（Asia/Shanghai）
 - 当前里程碑：Chimera 已提交源码及历史接入工作区
 - 当前重点：源版本 b2c0e774f03b5a7ec205f269e2170344df2139bd；不修改 RTL
-- 关键阻塞：登记/看板尚未完成；审查人待指定
-- 下一个动作：验证后推送 task/1-import-chimera 并提交 PR
+- 关键阻塞：登记校验器仅接受 private，本项目按用户要求 public，管理 Issue #3 待处理；看板凭据缺 read:project；审查人待指定
+- 下一个动作：审查 task/1-import-chimera，确认公开项目登记方式及补同步看板
 - 任务入口：https://github.com/rayggxia-workspace/pbit_kings/issues/1
-- Projects：待核验权限，不声称已同步
+- Projects：查询返回 INSUFFICIENT_SCOPES，状态未核实、同步待处理；未新增授权/保护设置
 
 个人进度：[jieruiz](../progress/jieruiz/STATUS.md)。交接：[HANDOFF](../work/jieruiz/1/HANDOFF.md)。
 
