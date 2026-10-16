@@ -1,5 +1,12 @@
 # AI 协作约定
 
+本项目为 `rayggxia-workspace/pbit_kings`，负责人 `jieruiz`；源库为 `jieruiz/pbit_kings`。必须同时遵守保留的 [p-bit 专项规则](docs/PBIT_RULES.md)。首次接入按用户明确要求为公开仓库，不上传厂商 IP、PDK、许可证、凭据或未授权数据。
+
+- 开始或恢复前读取最新 Issue、关联 PR、个人 STATUS 和交接，核实其他成员进度，避免重复开工。
+- 每项任务独立分支；并行 Codex 使用独立 clone/worktree，不覆盖他人修改。
+- 实验记录代码 commit、配置、数据版本、成果位置与 SHA-256。大型波形、网表、数据库和结果使用约定的共享存储；共享位置未约定时留在原授权位置，Git 只放可公开的索引。
+- 暂停/换人写可执行交接；明确本地完成、已推送、PR 待审、已合并的区别。权限、环境或数据不足时记录阻塞，不虚报远端完成。
+
 适用于本仓库中的任何 AI 工具。模型专属入口应指向此文件，避免多套规则漂移。
 
 开始任务、提交成果和修改任务状态前，读取统一规则 [rayggxia-project-collab v1.0.0](.agents/skills/rayggxia-project-collab/SKILL.md)。完整提交流程和回执要求以该 Skill 为准；加载方法见 [AI 使用说明](docs/AI_SKILL.md)。

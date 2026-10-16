@@ -1,18 +1,74 @@
-# Local secrets and machine-specific state
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-secrets/
+# Vivado generated directories
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.runs/
+*.gen/
+*.jou
+*.log
+*.str
+*.wdb
+*.wdf
+*.pb
+*.dmp
+*.rpt
+*.vcd
+*.fst
+*.bak
+*.backup*
 
-# Python cache and common local tooling state
+# XSim generated files
+xsim.dir/
+xsim.ini
+xvlog.*
+xelab.*
+xsim.*
+webtalk.*
+
+# VCS/Verdi generated files
+simv*
+csrc/
+simv.daidir/
+DVEfiles/
+verdiLog/
+*.kdb
+*.vpd
+*.fsdb
+*.key
+*.csv
+
+# Python generated files
 __pycache__/
-*.py[cod]
-.venv/
+*.pyc
+
+# OS/editor files
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
+*.swp
+*.tmp
 
-# Add project-specific build output after choosing the technology stack.
+# Keep source and project metadata
+!*.v
+!*.sv
+!*.xdc
+!*.xpr
+!*.tcl
+!*.md
+!*.svg
+
+# Restricted credentials and large EDA artifacts are not public deliverables.
+.env
+.env.*
+*.pem
+*.p12
+*.ddc
+*.db
+*.lib
+*.lef
+*.gds
+*.spef*
+*.sdf*
+*.enc*
+*.tar.gz
+*.zip
