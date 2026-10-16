@@ -1,0 +1,918 @@
+{
+  "source_repository": "jieruiz/pbit_kings",
+  "source_branch": "pbit_chimera",
+  "source_commit": "b2c0e774f03b5a7ec205f269e2170344df2139bd",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 138,
+      "sha256": "0c1cd8ae0597c1782385d689d5dc3d760d8a269b41c99564576da1975a1ea98f"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 518,
+      "sha256": "653b6b53763a0dfce8da963d225626f83ec50fecd561dbc85dada492512d1d43"
+    },
+    {
+      "path": "PLL_CFG_04cc59a_GUIDE.md",
+      "bytes": 12364,
+      "sha256": "e4114741e9d54b62d45cacc5dbb157b068a7fe87fee87889887b718eca260c9d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1254,
+      "sha256": "d14d3d977b6fd9d3403782fdeca751d5a1ef762477cb0c7eb9a724ac5f380bbd"
+    },
+    {
+      "path": "WORK_LOG_zenghongjie_shared_lfsr_lut.md",
+      "bytes": 8090,
+      "sha256": "93ac4649ece1cedd5e3f37fc0a7451a068a5d57630c5a4c8e3fef72326e6725a"
+    },
+    {
+      "path": "docs/pbit_overall_4color_king_graph.svg",
+      "bytes": 22579,
+      "sha256": "0f896ee732912a73bd0ed4ccfebe473b83e2a55776380809c89a03db412d7dbe"
+    },
+    {
+      "path": "gate_sim_500MHz/README.md",
+      "bytes": 3708,
+      "sha256": "4cd66437635127d516d7ed349778812236e073c02f96f3ca0ca944aba89b1f9b"
+    },
+    {
+      "path": "gate_sim_500MHz/gate_pipeline_env.sv",
+      "bytes": 5069,
+      "sha256": "48002e4aa7e8380ec42f0a346f9b715101d68fb611aceb26a3dcb4079cbe99ff"
+    },
+    {
+      "path": "gate_sim_500MHz/run_gate_pipeline_500_maxcut_sbatch.sh",
+      "bytes": 6322,
+      "sha256": "76879732f43445d690d6518d0bb84f1deb9fd615bea9b63e37b1397042476f25"
+    },
+    {
+      "path": "gate_sim_500MHz/run_gate_pipeline_500_sbatch.sh",
+      "bytes": 4765,
+      "sha256": "ff3d45dc5ab7deeaa1e82baedccdf377c134c38c6f09430aa9bc8fc12ed30e34"
+    },
+    {
+      "path": "gate_sim_500MHz/run_gate_pipeline_500_sdf_sbatch.sh",
+      "bytes": 6192,
+      "sha256": "4696b50ad616b4fcb06a08b362cd89f01326e7a96515014ee3f0c8ec4e3e512f"
+    },
+    {
+      "path": "gate_sim_500MHz/submit_gate_pipeline_500.sh",
+      "bytes": 564,
+      "sha256": "33c4c7579a8ca87dff618bc36ddb12b525960eeb6f35c3779b9cebe6d1df9340"
+    },
+    {
+      "path": "gate_sim_500MHz/submit_gate_pipeline_500_maxcut.sh",
+      "bytes": 552,
+      "sha256": "16c628ee7fb7c33d65046a63d4ac8f24269e66c4f4c1d4b3fdfd9d55dec9abf1"
+    },
+    {
+      "path": "gate_sim_500MHz/submit_gate_pipeline_500_sdf.sh",
+      "bytes": 572,
+      "sha256": "6c3b323cdeffaeeb994c5c7930156580bbd671783be3b03f63c91b10ab25e4f9"
+    },
+    {
+      "path": "gate_sim_500MHz/tb_gate_pipeline_maxcut.sv",
+      "bytes": 9259,
+      "sha256": "0c630f7ff35dc4cdd7c360dac1b810d1b268e534825c02dd25a0cdfd3735c651"
+    },
+    {
+      "path": "gate_sim_500MHz/tb_gate_pipeline_suite.sv",
+      "bytes": 10786,
+      "sha256": "1a80cdfdc4e36fb2dc87e33a29b4c929b1d9f584ea96a4bdd9de143bf7a25903"
+    },
+    {
+      "path": "gate_sim_500MHz/uart_host.sv",
+      "bytes": 1506,
+      "sha256": "e966a39b32b98589016e1730b36d92551cda3bf74a308ba3049fe7653df66d98"
+    },
+    {
+      "path": "gate_sim_500MHz_maxcut_lite/README.md",
+      "bytes": 1874,
+      "sha256": "daed95f91f3bcf171ccb194a5ff7c70c0806e575aea5377968b66d01ecba2498"
+    },
+    {
+      "path": "gate_sim_500MHz_maxcut_lite/run_gate_pipeline_500_maxcut_lite_sbatch.sh",
+      "bytes": 5876,
+      "sha256": "f7a1b21cd0c1892b9ebcd4be78447ebff8633ca6b41cc481756a1ecd415f9577"
+    },
+    {
+      "path": "gate_sim_500MHz_maxcut_lite/submit_gate_pipeline_500_maxcut_lite.sh",
+      "bytes": 570,
+      "sha256": "08f521e3f427e677cda14e0de6a4db8eec52d68f9149653c2e303f27be92ab83"
+    },
+    {
+      "path": "gate_sim_500MHz_maxcut_lite/tb_gate_pipeline_maxcut_lite.sv",
+      "bytes": 10457,
+      "sha256": "20c810ed75ee714cf421d040dcc1313fa55d1759bda05e4d4bea41bfb1c861a1"
+    },
+    {
+      "path": "gate_sim_500MHz_regression/README.md",
+      "bytes": 2222,
+      "sha256": "606a96fd4f4685994cb009ba69d1db760abe4a6d67fec8f5a335d35160fc18f0"
+    },
+    {
+      "path": "gate_sim_500MHz_regression/run_gate_pipeline_regression_sbatch.sh",
+      "bytes": 6312,
+      "sha256": "5e46f57b4aed09f4b557152dccc3ec701199eecbc97e8012051a7707ddcbf192"
+    },
+    {
+      "path": "gate_sim_500MHz_regression/submit_gate_pipeline_regression.sh",
+      "bytes": 560,
+      "sha256": "0f3d4adc66a25baf18d998bb3117d788d45c831c45a8226198ce6bcaab710a8f"
+    },
+    {
+      "path": "gate_sim_500MHz_regression/tb_gate_pipeline_regression.sv",
+      "bytes": 16140,
+      "sha256": "e1f4c32541aa2ddab9edc7c32754d3421bc133032225efaa8d2b479dfad7a306"
+    },
+    {
+      "path": "pipeline_tb/LATEST_PIPELINE_VS_EDGE_LE_BIAS_LT.md",
+      "bytes": 4396,
+      "sha256": "cd500cdc4dc542e101a59c8bf9b334899e184c75004e04954d35138be69dd0cc"
+    },
+    {
+      "path": "pipeline_tb/README.md",
+      "bytes": 5870,
+      "sha256": "cb3baf58a1476d7ac62910a40803dbbdb88e5b3ddf42706125e610b4756fd700"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/README.md",
+      "bytes": 3343,
+      "sha256": "6301d6143031b0dd2d9c77eb25c1722007ebf657b03fdea32a8d79a9e83cd225"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/chimera_problem_harness.sv",
+      "bytes": 4135,
+      "sha256": "db3ecc5bb0257d08c00de9ef1f73532c12bd6f9d93c40f43cf1d99e24333b80b"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/filelist_problem.f",
+      "bytes": 142,
+      "sha256": "d1b09feb9293b4115a08051b6ba7af38d69507c2aded5c485e5e9f913ab71236"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/README.txt",
+      "bytes": 1063,
+      "sha256": "3d0da5bdd111a47b389a84e9a363506abdab68305baaf2a858592c4f0269f576"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/chain_nodes.mem",
+      "bytes": 2538,
+      "sha256": "ec02b612a91998d55f3062df3783d1b51ce7d7ed176288c6b9e1e943aac8dfe7"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/chain_start.mem",
+      "bytes": 225,
+      "sha256": "322a1f209808ac9e2521d94b3013845b71b14795d2b950cab7431277d8cda112"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/clause_start.mem",
+      "bytes": 9,
+      "sha256": "22dbe6b7b70a64966e31813e597db3e863492d341bee2fb05c0e8864773387af"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/config_0.mem",
+      "bytes": 867165,
+      "sha256": "af9ed5bffde4edb8b645a32de1457a7b93da86f1c7a6e40d9465cf6e3ea9b461"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/graph_a.mem",
+      "bytes": 2484,
+      "sha256": "d2756a11b6165bb9fa9284da7c0736035f4d0417acd3c90c4cfa5f28c44b5a74"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/graph_b.mem",
+      "bytes": 2484,
+      "sha256": "19e994ad5d222d27f1240a4425a30a14ba5173346a5639578f180d9bd7e7e97f"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/graph_w.mem",
+      "bytes": 2484,
+      "sha256": "689779236667514a116c5c7b6f531e2e0c578506b7f96cea6a23004978a91208"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/initial_0.mem",
+      "bytes": 6400,
+      "sha256": "bae8ba1b99e27a6ebe326b8334d482a1c3b20ce8f1dab51649209770f0d75193"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/literals.mem",
+      "bytes": 9,
+      "sha256": "22dbe6b7b70a64966e31813e597db3e863492d341bee2fb05c0e8864773387af"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/manifest.json",
+      "bytes": 3410,
+      "sha256": "2ceed79e53b302140a2c61ef899ee411c3409b71e3d1b2fe9db4d118ceacde4a"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_best.mem",
+      "bytes": 288,
+      "sha256": "30e1cc0432270684f5516d9894f8777733e1d8ffd272bbe280a1e157a7543965"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_best_spins.mem",
+      "bytes": 25632,
+      "sha256": "932634775b4433bc823f67165eab725de807f9bc734316e5aca99a221117c6d6"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_broken.mem",
+      "bytes": 288,
+      "sha256": "0cb1133a61bdf0caacce32e41992d880e266c850f25440d29c841ea9fe15138c"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_cycles.mem",
+      "bytes": 544,
+      "sha256": "5eba74900d1f1190c786857a57f4d08bf315c09a76dacc510def5a64ee6c1aa2"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_i0.mem",
+      "bytes": 288,
+      "sha256": "432beb6ab92910f2a182bd6923fb7855880c18124ac1027e0c9dc57cdd1037bb"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_score.mem",
+      "bytes": 288,
+      "sha256": "845163b4cde1a5f933191a02b077b39dfc798bb518d1df4068dc10cf1969deb5"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_spins.mem",
+      "bytes": 25632,
+      "sha256": "d964f5ff65821ad042195cf91da8b2744d2f750c9d2a3c2ef36731a9f1f83df8"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_summary.json",
+      "bytes": 308,
+      "sha256": "1cb5feb5ebee42c15b7bfd9c934a30c788dba87fb51682dbe7117c2940fd22d9"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/oracle_ties.mem",
+      "bytes": 288,
+      "sha256": "37246050b448b3098be02311502a27cbd20d479ab43d4eb3f00580f883e21b3c"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/problem.svh",
+      "bytes": 692,
+      "sha256": "543818ee252c2ebe8b570e3c8e90fb8a9378b29228e292b5a1cc68c2acf8ccf5"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/oracle_fixtures/dense_cut_n0024_s101_s32_r1_m5/sweep_i0.mem",
+      "bytes": 288,
+      "sha256": "432beb6ab92910f2a182bd6923fb7855880c18124ac1027e0c9dc57cdd1037bb"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/check_results.py",
+      "bytes": 2513,
+      "sha256": "a434e1a980cefdbd97893bedc966418ff1a18695d2bb6e54ffa5c7c24e0d1b14"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/gen_chimera_problem.py",
+      "bytes": 13805,
+      "sha256": "1d558f0b04d11ee2f7d408eabe8b01c3860e19257eb5055513f4f1caea74f4f8"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/gen_pipeline_oracle.py",
+      "bytes": 6544,
+      "sha256": "64e842ccc90fc6e5df5a17f68547706bb69b30cc103af710a2cc18e5e899bf5a"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/anneal_i0_32_dec.txt",
+      "bytes": 3384,
+      "sha256": "273cbea3c0973f503b202276ea16e72617cb36bd7cb9aa9d1c715595124dd17a"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/dense_cut_n0024_s101/certificate.json",
+      "bytes": 8210,
+      "sha256": "831cc85a4e78293e6aeff0b783cf6476819a84fc357855e2c0b36b59b65e325b"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/dense_cut_n0024_s101/embedding.json",
+      "bytes": 3848,
+      "sha256": "09ae0b7cad3636c33a4a544c85cda7ce517d4a7fb76dc5994694964b717cb70f"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/dense_cut_n0024_s101/physical_ising.json",
+      "bytes": 55054,
+      "sha256": "49989feb8ebcd36c00fce78263bd5ead74f749ce384eda88ea73950359d1ceaa"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/dense_cut_n0024_s101/problem.json",
+      "bytes": 11305,
+      "sha256": "2d741431f1cc00cfb3f78f55923603f5488a46af30faa48346dd1a67672b3dda"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/native_cut_n0448_s201/certificate.json",
+      "bytes": 87442,
+      "sha256": "244f373b474bd893a92b1419415197d3685d8ff1dca59caac90d0a2e1a69b8fe"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/native_cut_n0448_s201/embedding.json",
+      "bytes": 14444,
+      "sha256": "55a0564cd2e60de9d52e093200bb5524eb73317caff11c944d908e9de1d5bf96"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/native_cut_n0448_s201/physical_ising.json",
+      "bytes": 159715,
+      "sha256": "8acfb5d8092b7dc1df7efcde8626a4f5710323a28f5f5bd88f96ab3600c8b815"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/native_cut_n0448_s201/problem.json",
+      "bytes": 60138,
+      "sha256": "8782ca17512f2ecc72c31abf4efa3e7db8f1b489a80d4d63132408444e09efc4"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random3_cut_n0096_s901/certificate.json",
+      "bytes": 5679,
+      "sha256": "a4fe375877080f1ffaba6454fa50c81e0ddaac0968f8a4acb5ad857380bbb470"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random3_cut_n0096_s901/embedding.json",
+      "bytes": 12162,
+      "sha256": "da85f1e8a1ad724568f9eecf1d4e3136d8bf8393a4547bb8477fe9737af502bb"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random3_cut_n0096_s901/physical_ising.json",
+      "bytes": 105347,
+      "sha256": "0ec725c9375afc494c9e8268870993eed987c315c87141c189797daf824b75d0"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random3_cut_n0096_s901/problem.json",
+      "bytes": 11518,
+      "sha256": "28e702f03896ae7beed1729bb4f36adf44225223b382a0470fd318436a20b2ea"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_cut_n0096_s401/certificate.json",
+      "bytes": 4057,
+      "sha256": "1b73a848cb9848739489920526d5b7049d62a2dc84f62f39ad914810f0487841"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_cut_n0096_s401/embedding.json",
+      "bytes": 6000,
+      "sha256": "18ccde80f0bd412da8cbe9461a7a38220e32ccca9484b41df755b4ea4f914b87"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_cut_n0096_s401/physical_ising.json",
+      "bytes": 44327,
+      "sha256": "b1ba7ddfedfdb9d07b431cf71a0149a0881ddbad719f475e2ed4e10dc3c92b1c"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_cut_n0096_s401/problem.json",
+      "bytes": 8038,
+      "sha256": "a6047b3e36e4e68b03294bb6b3ad420e5e6d8ba6a658384c7db8b64c06b731e8"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat3_n0024_s401/certificate.json",
+      "bytes": 339,
+      "sha256": "8cf97f626b6438009c222ba512f7f13c43a4b5c6455e6e46e62547487be56844"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat3_n0024_s401/embedding.json",
+      "bytes": 9161,
+      "sha256": "ce34a89f17b5c904bbe0160ca33de7b73cb2a6003d7f981c5137d7ce9f970906"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat3_n0024_s401/physical_ising.json",
+      "bytes": 86824,
+      "sha256": "e4c1e4f5870810ca5ddbf3e98d88412147e1f4818a8a32c6e9917f4c6536c1d4"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat3_n0024_s401/problem.json",
+      "bytes": 4241,
+      "sha256": "662916293a23988ff26d5f1c79283c4fa2c5d4cef5100c32b86d2f5e8ff7cad5"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat4_n0012_s401/certificate.json",
+      "bytes": 255,
+      "sha256": "858b3b42afc65c64bb0700d1e66d09b0a153ba626b0a15f9fe1cd3a716d3491c"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat4_n0012_s401/embedding.json",
+      "bytes": 15209,
+      "sha256": "43f50523ba3490c563210a48b2d89256097a9872604c4c3c6cfa6a70844bdcf3"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat4_n0012_s401/physical_ising.json",
+      "bytes": 147386,
+      "sha256": "3f865bdaf495593bc0d43611d220366703ea4a1e1d542df1d7431f87594698c2"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/random_sat4_n0012_s401/problem.json",
+      "bytes": 5065,
+      "sha256": "f70a04d2c8d4a984f2fafced1161eef14d22e4cd02bb6c1db5d6a46b2230fa91"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/uniform_sat3_n0060_s501/certificate.json",
+      "bytes": 624,
+      "sha256": "11ba005557e18469affd51d374390bc267b18d4a21b7f7b8d4d396a328eb2d42"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/uniform_sat3_n0060_s501/embedding.json",
+      "bytes": 34457,
+      "sha256": "500b46086858eb85b96d260ec6cf4854d47bd842a2f0f78a129bcfb1e8353d1f"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/uniform_sat3_n0060_s501/physical_ising.json",
+      "bytes": 323275,
+      "sha256": "85266457fee204148c3c3f2c00f6bdbb0d0007c6e3d201510aea3de967919ff4"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/problem_gen/inputs/uniform_sat3_n0060_s501/problem.json",
+      "bytes": 10526,
+      "sha256": "23905b63d6fcd39b0cdf1ffdc2e0509363af7509b7decd709799237e42584dc7"
+    },
+    {
+      "path": "pipeline_tb/chimera_problem/tb_run_chimera_problem.sv",
+      "bytes": 19693,
+      "sha256": "07ee2056806854172a75536b0807d0e1935d92378536431543c67d989bacb06e"
+    },
+    {
+      "path": "pipeline_tb/extra/tb_config_boundaries.sv",
+      "bytes": 6760,
+      "sha256": "2d591f528cd621f86aa7d003158a7c29e79ade2522a342ad87d61ce5f792abd8"
+    },
+    {
+      "path": "pipeline_tb/extra/tb_error_paths.sv",
+      "bytes": 10811,
+      "sha256": "882c65732863bf6474bcb356c2fc90b0cd2dbbc7309306575fe13f778a3e694e"
+    },
+    {
+      "path": "pipeline_tb/extra/tb_mac_signed_lanes.sv",
+      "bytes": 3816,
+      "sha256": "a30ea6dc8796d4db94eb0c4532895ca71ed0d3c80b804a1094d713305bb04664"
+    },
+    {
+      "path": "pipeline_tb/extra/tb_probability_modes.sv",
+      "bytes": 5279,
+      "sha256": "bd2d718ed3a2adc11e604d1e19144934efc05cef1d8ddeab3cf3a641a23a7030"
+    },
+    {
+      "path": "pipeline_tb/extra/tb_topology_routing.sv",
+      "bytes": 12878,
+      "sha256": "155f2fd1c49e4a4b43a730edb6d3bae93157bdda64d8696252233d9d342dae03"
+    },
+    {
+      "path": "pipeline_tb/extra/tb_uart_end_to_end.sv",
+      "bytes": 6038,
+      "sha256": "6b96b0b42626d8ace943d06ae77dbc5a1a70b83ce8a0a5bcda2670a742c59dd4"
+    },
+    {
+      "path": "pipeline_tb/extra/tb_uart_full_snapshot.sv",
+      "bytes": 9631,
+      "sha256": "9e49147a6989d9e004b703488a2c7ad912170ecac5e3d400a786544623e30a01"
+    },
+    {
+      "path": "pipeline_tb/prepare_tb.py",
+      "bytes": 2518,
+      "sha256": "6dc0d78b860a983aa021b6473081f2ab4989b628e99bb79c396f054e6851eb83"
+    },
+    {
+      "path": "pipeline_tb/run_chimera_problem_sbatch.sh",
+      "bytes": 3453,
+      "sha256": "a2bab45677fb80c9afc341fbfb4ee9b0f5225e08867b9039ded510551f31dd94"
+    },
+    {
+      "path": "pipeline_tb/run_extra_sbatch.sh",
+      "bytes": 3334,
+      "sha256": "ebe7f2469b09c2a64deee8c96573f2eff67536d65d7b6443b09dab7eda4fd278"
+    },
+    {
+      "path": "pipeline_tb/run_pipeline_oracle_sbatch.sh",
+      "bytes": 3418,
+      "sha256": "8c35f6f7ae17e3b493ecd2a00e44b65196e941051b7840790d8f572ea1643314"
+    },
+    {
+      "path": "pipeline_tb/run_sbatch.sh",
+      "bytes": 1096,
+      "sha256": "68d34ad21d2afd16a66ae25fa41b159d41e473f5ee456ac45f1c8fdd81ca5112"
+    },
+    {
+      "path": "pipeline_tb/submit_full_regression.sh",
+      "bytes": 1821,
+      "sha256": "ed016ba01411dfa56394a553ffb78d6fd6ea78a6507ad17adb104d1d9736828f"
+    },
+    {
+      "path": "pipeline_tb/tb_run3x3.sv",
+      "bytes": 9777,
+      "sha256": "9dfe065d815f47b72954a86603d270ca2de33259e37a3fcc886e18843dca538e"
+    },
+    {
+      "path": "pipeline_tb/tb_rw_pipeline.sv",
+      "bytes": 13054,
+      "sha256": "285ddf16f0114f42d8f78c0fa485aff9c90de471b45193ebe5f38fad03425b78"
+    },
+    {
+      "path": "pipeline_tb/validation.txt",
+      "bytes": 2405,
+      "sha256": "7332de7370ade5fa38a1c299fd1168a53384d7060ddcb70238eeafa09ffa4d3f"
+    },
+    {
+      "path": "rtl/common/dff_sets.sv",
+      "bytes": 1569,
+      "sha256": "6a4e3b1bb396b80cafdab1f78d9c1e5eb7d3fa345cb4b41b54771e214b5fb4a8"
+    },
+    {
+      "path": "rtl/common/one_counter.sv",
+      "bytes": 3367,
+      "sha256": "b19f9a4bc2b20f9556b9300d7afec1956e32830047ed4c06c02e090e1fc1f4a3"
+    },
+    {
+      "path": "rtl/filelist.f",
+      "bytes": 49,
+      "sha256": "f78d14b6ac314588087f6598b14173c1e0efc68bf66b44399dfb01aa4a423a82"
+    },
+    {
+      "path": "rtl/filelist_pbit_top_chimera.f",
+      "bytes": 732,
+      "sha256": "7be4f9335b931efcd9483b9d8cc4c9b0c3c378c2480e9d3fbf95e450547ec63b"
+    },
+    {
+      "path": "rtl/filelist_rw_basic.f",
+      "bytes": 14,
+      "sha256": "b3991371113be7612d77f69fd55891ecc0fbf261496ff2740c278a1ddd20bc49"
+    },
+    {
+      "path": "rtl/modification_log.txt",
+      "bytes": 2940,
+      "sha256": "1b843db1aab809df33f5bb1940045574ba9dcc8accf7828c76edc947a36c6be6"
+    },
+    {
+      "path": "rtl/new_version/PLL_CONFIG.md",
+      "bytes": 16164,
+      "sha256": "92bbd13c87757625443cdedbd82848c4f1062532ea5e1017dae9d33421cb9d96"
+    },
+    {
+      "path": "rtl/new_version/UART_RX.sv",
+      "bytes": 5717,
+      "sha256": "0032d392651efa55d00e9ed9530633cb6d3c0fd8506e3cb1c505ec95f488118d"
+    },
+    {
+      "path": "rtl/new_version/UART_TX.sv",
+      "bytes": 3469,
+      "sha256": "8c6f078599655e5cfab5c9a3e3d0854a4fe28a0cf7f4c0e397f1e4b6e3f9d8d6"
+    },
+    {
+      "path": "rtl/new_version/comparator_vote.sv",
+      "bytes": 3227,
+      "sha256": "b292f29b7a2d020bff78c0dfca388d33b759b968df5cf433a6d76ab617a3c103"
+    },
+    {
+      "path": "rtl/new_version/edge_compare6.sv",
+      "bytes": 928,
+      "sha256": "fd9294bfb52232fe4b2ac6298e62cae36ba7308d642797cf2bb1d2e9e6fc2fe6"
+    },
+    {
+      "path": "rtl/new_version/edge_prob_compare.sv",
+      "bytes": 397,
+      "sha256": "b5ad578634ac6962ee8d1b9c6341d58d105ce17c1064ae7b44e4b14e0ae08ccc"
+    },
+    {
+      "path": "rtl/new_version/edge_reg_coupler.sv",
+      "bytes": 4082,
+      "sha256": "b7056a7977977f7fdd95fe62619d1781765537ba2842a77a819c82a5918f8000"
+    },
+    {
+      "path": "rtl/new_version/lfsr32_rng32.sv",
+      "bytes": 1415,
+      "sha256": "a69ca70ef32282bc55480e6cd881edc8d9c13b0f94b266a975e7d7cce210eb02"
+    },
+    {
+      "path": "rtl/new_version/mac.sv",
+      "bytes": 3902,
+      "sha256": "848d668067468a6d5a059f9bb5f3e3ef2e968272be24699ea5eba52551b99d6b"
+    },
+    {
+      "path": "rtl/new_version/majority_vote.sv",
+      "bytes": 806,
+      "sha256": "7cdc3225a489702d2baa4f1f2aa4ea7cf75375f712729d565e92a59af0f2a141"
+    },
+    {
+      "path": "rtl/new_version/pbit_8edge_compute.sv",
+      "bytes": 4344,
+      "sha256": "f4c86083f0291a68a170a2c6c73cfb3abfec9a5e0753698f6e350902c6126eac"
+    },
+    {
+      "path": "rtl/new_version/pbit_array_chimera.sv",
+      "bytes": 10215,
+      "sha256": "01c01f7f17fc13c3250769b239ffd00e5547ad26af952eac9d85464b487841a1"
+    },
+    {
+      "path": "rtl/new_version/pbit_bank.sv",
+      "bytes": 21183,
+      "sha256": "5291f53d6a0b3accbca4979fb43c0e8bf3d3bd811c3f5cbe9b0a2bc44a1bf3b7"
+    },
+    {
+      "path": "rtl/new_version/pbit_control.sv",
+      "bytes": 3606,
+      "sha256": "291f626d5e3996b3cc18cce6ac3622470ecce755262af75164905857f7dc782c"
+    },
+    {
+      "path": "rtl/new_version/pbit_edge_contrib2.sv",
+      "bytes": 747,
+      "sha256": "071d73ae64734700169e24aceb7838983f15421439af3bd2624f6d052c347729"
+    },
+    {
+      "path": "rtl/new_version/pbit_io_wrapper.sv",
+      "bytes": 5625,
+      "sha256": "7c204ebac5b513683b5578868cfe3c89c1751e876c4bf1c0bb38ebb90bb896db"
+    },
+    {
+      "path": "rtl/new_version/pbit_node.sv",
+      "bytes": 4748,
+      "sha256": "edf94781aac27f6b0b63d72f04f76e4b5bf2d09d86402015c7c9b45171bc8252"
+    },
+    {
+      "path": "rtl/new_version/pbit_pkg.sv",
+      "bytes": 37913,
+      "sha256": "8cf71e8e984283cb0d44b36cfcfa20a3dbee5090a08591fb71edffde3018f10b"
+    },
+    {
+      "path": "rtl/new_version/pbit_prob_compare16.sv",
+      "bytes": 301,
+      "sha256": "4fc213d9dd0b1396ca78aa91d290e6669dada54d029cfc75ebcc3d5773a2f26c"
+    },
+    {
+      "path": "rtl/new_version/pbit_rand16_extract.sv",
+      "bytes": 1055,
+      "sha256": "4865133af6c8990e4f90aa862776d9e925fbb1704c91198dd10230269d21c281"
+    },
+    {
+      "path": "rtl/new_version/pbit_reg_block.sv",
+      "bytes": 27256,
+      "sha256": "8e6538a3016b1dd141b84162b462ca623d9c85b06e97d61c05114dab6bd16b5c"
+    },
+    {
+      "path": "rtl/new_version/pbit_top.sv",
+      "bytes": 4236,
+      "sha256": "39df99c917485b9ae9560989c0ba61bf103c9aefb4113455f39d09d2a6a22d20"
+    },
+    {
+      "path": "rtl/new_version/pbit_uart_reg_master.sv",
+      "bytes": 14274,
+      "sha256": "e8d6b156090cab9d20a170c4a549d94440e1a42f6dc26675fdc3279adfffdf81"
+    },
+    {
+      "path": "rtl/new_version/pbit_uart_reg_subsystem.sv",
+      "bytes": 4330,
+      "sha256": "57f7459e2e498ee7e62727e75a063441de133819a7c7e5cd833839dac6bd9887"
+    },
+    {
+      "path": "rtl/new_version/phase_control.sv",
+      "bytes": 4582,
+      "sha256": "d46d25cc94d034e714385926db870da39c364f58ba61b0fc47a9c842139b9c02"
+    },
+    {
+      "path": "rtl/new_version/pll_cfg_regs.sv",
+      "bytes": 10724,
+      "sha256": "44c55c774a0b55450341e00cd538ae5a76bafc1494c95b085f97fb84b0c441e7"
+    },
+    {
+      "path": "rtl/new_version/pll_cfg_uart.sv",
+      "bytes": 7203,
+      "sha256": "82f38b51f4f184967f8b220923a02401ab45b11c2193243842dd91caf6485102"
+    },
+    {
+      "path": "rtl/new_version/reset_sync_async_assert.sv",
+      "bytes": 849,
+      "sha256": "3a989ef1754038f86b0e0c41c49b5c6f1a7c51c2ed662e629a37e38ccd1da67c"
+    },
+    {
+      "path": "rtl/new_version/tanh_LUT.sv",
+      "bytes": 11067,
+      "sha256": "a830a849d06fd7aede70ca250047d68d952e819a2b21c126a7d0217fea6d69ed"
+    },
+    {
+      "path": "rtl/new_version/unit_cell.sv",
+      "bytes": 62349,
+      "sha256": "4f5151cdc88091514c127bd1ddbd535a19360f8475636feb313ee8f91f08dfcb"
+    },
+    {
+      "path": "rtl/pbit_register_file.xlsx",
+      "bytes": 23676,
+      "sha256": "79945cffff2bb1ca37a93a78d2a1b291b1aa1f7e28b1b133c642ff96956bcf47"
+    },
+    {
+      "path": "rtl/pll_register_file.xlsx",
+      "bytes": 8183,
+      "sha256": "302401a5424509e213fd3097a7751b15736a8739c1b0c7652b7bb7d21ecbd1cd"
+    },
+    {
+      "path": "rtl/tb/gen_ksat_10v40c_data.py",
+      "bytes": 23502,
+      "sha256": "924acd4e7aa937a739ea26fbbf514f3ba9f1ecd69d94651691051d2cc1c3ff3e"
+    },
+    {
+      "path": "rtl/tb/gen_w50_maxcut_data.py",
+      "bytes": 17012,
+      "sha256": "9cd4e92065ab7ab7da6a92e33bcb267c78da879d5016c255b6c5620110620617"
+    },
+    {
+      "path": "rtl/tb/generated/problem_data.svh",
+      "bytes": 409355,
+      "sha256": "1083dd59a3a9ffcecacbbfbf4bf62c1daf45542061db08697bddf24427e81f05"
+    },
+    {
+      "path": "rtl/tb/generated/problem_score.svh",
+      "bytes": 6834,
+      "sha256": "087790a5237c5af9552d69ffea6968b48f8c47748e8d04de2671c2e03c98dbaa"
+    },
+    {
+      "path": "rtl/tb/problem_gen/gen_native_king_maxcut.py",
+      "bytes": 8022,
+      "sha256": "5c5dc8b76009f7ede0b7fea83d8889a191b58cf4f43a0bbc6d0740fa2031d0ff"
+    },
+    {
+      "path": "rtl/tb/problem_gen/gen_problem.py",
+      "bytes": 78037,
+      "sha256": "c99ab41c3af6e3a0b739444ed20789d94ae6495bb14ac27d934374a30602455b"
+    },
+    {
+      "path": "rtl/tb/problem_gen/gen_tsp5_full_kings40.py",
+      "bytes": 27378,
+      "sha256": "317946a0c58cb228e2a4b703c3463bf5d7342d42ba895b0f62511e3a218caee4"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/common/KingsGraph_Embedding_W50_Best_19x19.json",
+      "bytes": 4930,
+      "sha256": "f16524782a46bc1ad2ddfc08409d13b66b4c9317af44bdb6bd0f0a8b2f1a15ec"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/common/anneal_i0_64final_dec.txt",
+      "bytes": 6345,
+      "sha256": "ffa620fb530b2cfca5c6fa9ad2062e1202474d87a05a07f110af9e69b973b3d5"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/ksat_10v40c/three_sat_10v40c_J50.txt",
+      "bytes": 5432,
+      "sha256": "6eb137cc4f993fc02980001520118dda8cf8432b383a5e30e7cefac5ffaa60cf"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/ksat_10v40c/three_sat_10v40c_bias50.txt",
+      "bytes": 238,
+      "sha256": "47fe9cde41508d16ca202011d60f04ab4ca45743d523b193f21f4c35a5e5f25b"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/ksat_10v40c/three_sat_10v40c_clauses.txt",
+      "bytes": 659,
+      "sha256": "660bcc1eb8e036f53fe8bea53c603ac48f9a1a0ff6e939027cee25817aedd975"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/tsp5_full_kings40/tsp5_J25.txt",
+      "bytes": 3490,
+      "sha256": "36f702fbfab71673e58480a46970e210bb9171d2e87ec860cfd3e9ad3c5b1b85"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/tsp5_full_kings40/tsp5_bias25_solver_sign.txt",
+      "bytes": 325,
+      "sha256": "3d2f754575cb9e04cf66ade774f14f8fbe17237be6374da3f9463113ac82471e"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/tsp5_full_kings40/tsp5_distance_matrix.txt",
+      "bytes": 268,
+      "sha256": "ec6b4d35e68a23d4f3db24c5033979a7a5797543388d4e0e6b9b58a63b3360a2"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/tsp5_full_kings40/tsp5_embedding_40x40.json",
+      "bytes": 7132,
+      "sha256": "991157e3b4047063e1fbb20f318022ea7f555be6c53be177d77d1a1319bfc353"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/tsp5_full_kings40/tsp5_problem.json",
+      "bytes": 1084,
+      "sha256": "7e8654c795ef1efc8939d4c24273258f605e77838ca157a3be208c038e777585"
+    },
+    {
+      "path": "rtl/tb/problem_gen/inputs/w50_maxcut/generated_W50.txt",
+      "bytes": 5023,
+      "sha256": "14b3d313433c296f8ea8a8caf7137577d4aae8e1f33bcafdcde6b93227e1c0da"
+    },
+    {
+      "path": "rtl/tb/problem_gen/specs/ieee_20x22_pattern.json",
+      "bytes": 997,
+      "sha256": "9deaff7c5a20bc305d38bdde2bb8a5175118c692f2f10df3844c33a9e4e3eaf1"
+    },
+    {
+      "path": "rtl/tb/problem_gen/specs/ksat_10v40c.json",
+      "bytes": 908,
+      "sha256": "392b253d7644407d61f5ca0ec7b9f93fd7208c868773ddf1ade7687ce541f728"
+    },
+    {
+      "path": "rtl/tb/problem_gen/specs/local_qubo_10x10.json",
+      "bytes": 706,
+      "sha256": "30fd20ed26cc443b669a7130dd1a4667312208a0da4ef296bf22396463d0334c"
+    },
+    {
+      "path": "rtl/tb/problem_gen/specs/local_qubo_40x40.json",
+      "bytes": 708,
+      "sha256": "08981d687195fb986bbd2e9fd4c1cfb29d7a1baf49f317b98a9ccecf154c82a7"
+    },
+    {
+      "path": "rtl/tb/problem_gen/specs/native_king_maxcut_40x40.json",
+      "bytes": 719,
+      "sha256": "aaf428a14371614bfd95c4a1dae3ce48ffa756b218cb90267c504dcbf8ada085"
+    },
+    {
+      "path": "rtl/tb/problem_gen/specs/tsp5_full_kings40.json",
+      "bytes": 919,
+      "sha256": "6ed39a2f22044755bb4d9cbe4bb3fb9f6fe2668ef3d01c43bed3d2cd14a460ae"
+    },
+    {
+      "path": "rtl/tb/problem_gen/specs/w50_maxcut.json",
+      "bytes": 668,
+      "sha256": "75153394663048faa50b19ae71540adc55146794dfd0a07665becc69aff6d7b6"
+    },
+    {
+      "path": "rtl/tb/tb_ksat_10v40c_data.svh",
+      "bytes": 565236,
+      "sha256": "6a6eed2e4c9f5ccb25582b1bef6c6a7a8df0b072057cc961a0ae0361b39e6323"
+    },
+    {
+      "path": "rtl/tb/tb_rw_basic.sv",
+      "bytes": 11631,
+      "sha256": "ed2c0a15eb58aa42f22212318a9a0b79e77a3882ff0480cf1ad343fac6afbaae"
+    },
+    {
+      "path": "rtl/tb/tb_w50_maxcut_data.svh",
+      "bytes": 368926,
+      "sha256": "42c5c0161300094156184f767945cfc95f0ea9083b46edbe8077e6d6a683364b"
+    },
+    {
+      "path": "run_sim_sbatch.sh",
+      "bytes": 1793,
+      "sha256": "0325fb0c314d033c05fb03e81540e7c5adadca1a997626bcc1dc4f15011cda08"
+    },
+    {
+      "path": "sim/pbit_FPGA_top_uart.sv",
+      "bytes": 17924,
+      "sha256": "24382a0f646090334604c63786f9789d0e69c24427fc2c867c5bc72ebd04feb8"
+    },
+    {
+      "path": "sim/tb_FPGA_uart.sv",
+      "bytes": 17924,
+      "sha256": "24382a0f646090334604c63786f9789d0e69c24427fc2c867c5bc72ebd04feb8"
+    },
+    {
+      "path": "sim/tb_p_bit_array_kings_3_3_direction.sv",
+      "bytes": 14977,
+      "sha256": "6bacfaa537f44d1d45cc6641ffb793ce5abcba8a62cf2998005f75333b4f0b2b"
+    },
+    {
+      "path": "sim/tb_p_bit_kings_3_3.sv",
+      "bytes": 12764,
+      "sha256": "9e14ce581c9429c5d116a42f9850616c18f7c21acb215cec361c8dac24b61ac2"
+    },
+    {
+      "path": "sim/tb_p_bit_kings_graph_19_19.sv",
+      "bytes": 16953,
+      "sha256": "599d46bd3970ec8f3d51f91c8913c1bab070ddd839189d6d993e91bfc4c59fe5"
+    },
+    {
+      "path": "sim/tb_pbit_kings_3-3.v",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sim/tb_pbit_update_core.v",
+      "bytes": 19339,
+      "sha256": "45212faf332fbe006233d9d74fc1b3a1b8fb24ce3041ca16ce01fbb324ba92ad"
+    },
+    {
+      "path": "sim/tb_tanh.v",
+      "bytes": 6025,
+      "sha256": "f81061e56008869c9a648a1e5038c628cb70d856d08b1c03086653d1cbc1fcd5"
+    },
+    {
+      "path": "top/AXKU042_PBIT_TOP.sv",
+      "bytes": 2786,
+      "sha256": "ecdfd998c6c497e1da38ca1e078049ca2ff4e61f8f6cb171ba0abd6f43b71872"
+    },
+    {
+      "path": "vivado_project/p_bit_kinggraph_new.cache/wt/project.wpc",
+      "bytes": 61,
+      "sha256": "868826f37ffb4c6f5b92e253c7d473f0effa236e823a5923a3691677b870cadb"
+    },
+    {
+      "path": "vivado_project/p_bit_kinggraph_new.hw/p_bit_kinggraph_new.lpr",
+      "bytes": 290,
+      "sha256": "5eefb284324f0792ea1c0198f004b2c18736cffba5ae6a52e124a3bb5453a12c"
+    },
+    {
+      "path": "vivado_project/p_bit_kinggraph_new.xpr",
+      "bytes": 22415,
+      "sha256": "25d6d374cea806d592c86118c68e43e7fc33ac027f1dba259ef6f6ef0721ea0c"
+    },
+    {
+      "path": "vivado_project/vivado.jou",
+      "bytes": 1102,
+      "sha256": "c8bb4e9d7d0703e4e982b2473ab308380d0105e234acdce004cc815676cdb500"
+    },
+    {
+      "path": "vivado_project/vivado.log",
+      "bytes": 15857,
+      "sha256": "43a96c33f1de37bc20bbf5d1b4776d98ba275b14b4c861ad80f72829ffc24299"
+    }
+  ],
+  "hash_basis": "original Git blob bytes; working-tree CRLF may differ"
+}

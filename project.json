@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "project_id": "project-template",
-  "name": "项目名称（创建项目后修改）",
-  "lifecycle": "template",
+  "project_id": "pbit-kings",
+  "name": "p-bit King/Chimera 电路",
+  "lifecycle": "active",
   "owner": {
-    "github_handle": null
+    "github_handle": "jieruiz"
   },
   "repository": {
-    "full_name": null,
-    "default_branch": null,
-    "intended_visibility": "private"
+    "full_name": "rayggxia-workspace/pbit_kings",
+    "default_branch": "main",
+    "intended_visibility": "public"
   },
   "workflow": {
     "task_source_of_truth": "github_issues",
