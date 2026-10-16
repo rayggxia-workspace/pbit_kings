@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "project_id": "project-template",
+  "name": "项目名称（创建项目后修改）",
+  "lifecycle": "template",
+  "owner": {
+    "github_handle": null
+  },
+  "repository": {
+    "full_name": null,
+    "default_branch": null,
+    "intended_visibility": "private"
+  },
+  "workflow": {
+    "task_source_of_truth": "github_issues",
+    "states": ["backlog", "ready", "in_progress", "blocked", "in_review", "done"],
+    "branch_pattern": "task/<issue-number>-<short-slug>",
+    "review_delivery": "pull_request"
+  },
+  "sources_of_truth": {
+    "tasks_and_assignees": "github_issues",
+    "portfolio_view": "github_projects_if_configured",
+    "access_control": "github_repository_and_organization_settings",
+    "context_and_decisions": "repository_documents"
+  },
+  "documents": {
+    "instructions": "AGENTS.md",
+    "brief": "docs/PROJECT_BRIEF.md",
+    "architecture": "docs/ARCHITECTURE.md",
+    "status": "docs/STATUS.md",
+    "decisions": "docs/decisions/README.md",
+    "handoffs": "docs/handoffs/README.md"
+  },
+  "checks": {
+    "management_structure": "python scripts/check_project.py",
+    "product_tests": null
+  }
+}

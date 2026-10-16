@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "task_state_source": "issue_status_label",
+  "projects_status_field": "Status",
+  "mappings": [
+    {"state": "backlog", "issue_label": "status:backlog", "project_status": "Backlog"},
+    {"state": "ready", "issue_label": "status:ready", "project_status": "Ready"},
+    {"state": "in_progress", "issue_label": "status:in_progress", "project_status": "In progress"},
+    {"state": "blocked", "issue_label": "status:blocked", "project_status": "Blocked"},
+    {"state": "in_review", "issue_label": "status:in_review", "project_status": "In review"},
+    {"state": "done", "issue_label": "status:done", "project_status": "Done"}
+  ]
+}

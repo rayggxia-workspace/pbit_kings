@@ -1,0 +1,18 @@
+# Local secrets and machine-specific state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Python cache and common local tooling state
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Add project-specific build output after choosing the technology stack.

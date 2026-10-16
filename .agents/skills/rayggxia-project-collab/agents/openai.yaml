@@ -1,0 +1,6 @@
+interface:
+  display_name: "团队项目协作"
+  short_description: "统一团队任务提交、文件存放、个人进度、审查交接与看板同步规则"
+  default_prompt: "请使用 $rayggxia-project-collab 完成本次项目任务，读取目标仓库规则，核验 Issue、成果、进度和看板，并给出实际提交回执。"
+policy:
+  allow_implicit_invocation: true

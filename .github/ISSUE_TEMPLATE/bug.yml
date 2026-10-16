@@ -1,0 +1,44 @@
+name: 缺陷
+description: 提供可复现问题、影响和预期行为
+title: "[Bug] "
+labels: ["type:bug", "status:backlog"]
+body:
+  - type: textarea
+    id: observed
+    attributes:
+      label: 实际行为与影响
+      description: 哪项功能受影响？影响谁？
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 提供最小复现；无法稳定复现时明确说明。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境与版本
+      description: 应用版本或提交、系统、运行方式等必要信息。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 日志或截图
+      description: 只提供相关片段，先移除凭据和不应共享的信息。
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 修复验收
+      description: 写出判断修复有效的检查；尚不明确可写“待排查”。
+    validations:
+      required: true

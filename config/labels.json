@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "labels": [
+    {"name":"type:task","color":"1D76DB","description":"可验收的任务"},
+    {"name":"type:bug","color":"D73A4A","description":"缺陷与异常"},
+    {"name":"type:decision","color":"5319E7","description":"需要作出并记录的决策"},
+    {"name":"priority:p0","color":"B60205","description":"立即处理：严重阻断"},
+    {"name":"priority:p1","color":"D93F0B","description":"本轮优先"},
+    {"name":"priority:p2","color":"FBCA04","description":"正常排期"},
+    {"name":"priority:p3","color":"C5DEF5","description":"后续考虑"},
+    {"name":"status:backlog","color":"EDEDED","description":"尚待梳理"},
+    {"name":"status:ready","color":"BFD4F2","description":"范围和验收标准清楚"},
+    {"name":"status:in_progress","color":"1D76DB","description":"正在执行"},
+    {"name":"status:blocked","color":"D93F0B","description":"受阻：在评论中写明依赖"},
+    {"name":"status:in_review","color":"5319E7","description":"等待审查与验收"},
+    {"name":"status:done","color":"0E8A16","description":"已验收完成"},
+    {"name":"ai:ready","color":"BFDADC","description":"任务说明足够完整，可交给 AI"},
+    {"name":"ai:needs-human","color":"F9D0C4","description":"需要人工判断或操作"}
+  ]
+}

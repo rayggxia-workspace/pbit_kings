@@ -1,0 +1,46 @@
+name: 任务
+description: 明确目标、范围、验收条件和依赖
+title: "[Task] "
+labels: ["type:task", "status:backlog"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标
+      description: 要解决什么问题？完成后应有什么变化？
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 范围与不包含的内容
+      description: 列出涉及的模块、仓库；明确本次不做什么。
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收条件
+      description: 使用可以通过检查确认的条件；建议使用复选框。
+      placeholder: "- [ ] 给定某个输入，得到预期结果"
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依赖与阻塞
+      description: 关联 Issue、资料和需要谁确认；没有则写“无”。
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: 验证方式
+      description: 写明预期的测试命令、人工检查或可交付证据。
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: 补充上下文
+      description: 附上必要且允许共享的信息；不要粘贴密码或令牌。
