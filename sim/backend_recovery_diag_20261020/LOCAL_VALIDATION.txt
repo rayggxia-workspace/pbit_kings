@@ -1,0 +1,24 @@
+Release: 20261020_recovery_diag_v1
+Date: 2026-10-20 Asia/Shanghai
+
+Actual local checks:
+- Python unittest discovery: 13 tests PASS.
+- All 1,589 timing events in the original recovery log parsed and found inside
+  definite core_rst_n=0 intervals. No new raw archive extraction was retained.
+- Read-only watch generation: 1,575 unique actual affected instances; unsafe
+  hierarchy names rejected.
+- Icarus monitor execution: known write PASS; unknown enable, unknown data and
+  wrong Q capture each rejected with the expected specific failure.
+- Icarus top elaboration/syntax with a minimal stub environment: PASS.
+  The stub was NOT run as a functional DUT test.
+- Python source parsed using Python 3.6 grammar: PASS.
+- Bash syntax and packaged manifest checks: recorded in the task validation log.
+
+No commercial EDA run was performed locally. No full-netlist functional/timing
+PASS, PT power result, new PVT coverage or silicon signoff is claimed.
+Original failed recovery test is evidence, not converted into PASS by this work.
+The existing reviewed UART first-stage profile remains narrow; no MAC waiver.
+
+Local Python: 3.8.1. Target server: Python 3.6.6 and VCS O-2018.09-SP2.
+The first sandboxed Icarus launch failed with Windows DLL relocation error 623;
+the same tests were run outside that sandbox and completed successfully.

@@ -30,6 +30,15 @@ python work/jieruiz/1/verify_import.py
 
 CI 仅申请仓库内容读取权限；checkout 固定到官方 [v7.0.1 发布提交](https://github.com/actions/checkout/commit/3d3c42e5aac5ba805825da76410c181273ba90b1)，不保留登录凭据。升级时核对官方发布记录再更新提交号。
 
+## 定向后仿诊断（Issue #3）
+
+`sim/backend_recovery_diag_20261020/` 是 300 MHz/WC/10 ps 的中途复位诊断。
+本地检查：`python -m unittest discover -s sim/backend_recovery_diag_20261020/tests -v`。
+服务器使用脚本包内 `README_ZH.txt` 的输入路径与 `bash submit.sh all`，一次编译、
+三个复位相位；保留 timing checks、原始违例、受影响寄存器新写入及完整 snapshot
+比较。功能恢复不是时序签核；不重跑已通过的跨 bank、边界和独立 pin UART。
+全网表商业 EDA 未在本机执行。
+
 ## 配置与外部依赖
 
 共享存储尚未统一；受限资料留在原授权位置，不进入公开仓库。实验须记录代码、配置、数据/库版本、PVT、工具、种子、成果位置及 SHA-256。忽略规则不能替代对已提交文件的检查。
