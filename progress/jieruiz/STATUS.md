@@ -1,5 +1,26 @@
 # jieruiz progress
 
+## 2026-10-20 PLL Mode Coverage
+
+Owner: jieruiz. Issue: https://github.com/rayggxia-workspace/pbit_kings/issues/5.
+Branch: task/5-pll-mode-validation; base task/3-reset-recovery-diagnostic,
+05571587a8895d644f73c767bda02fa146ecedca (PR #4 dependency, not merged).
+Sparse checkout: tmp/pbit-pll-issue5-20261020; no new full clone/helper checkout.
+Stage: local script implementation/verification complete; PR delivery pending.
+Scope: sim/backend_pll_modes_20261020 and task docs; no DUT/PDK/vendor behavior edits.
+Validation: 15 unittest PASS, including XSim actual-host three-baud/back-to-back
+codec tests, full new top declaration-stub elaboration, Icarus clock guard negative
+tests, Python 3.6 grammar and WC/BC setup selection. Two Bash syntax checks PASS.
+No new real-netlist VCS, power, analog-lock or STA signoff result locally.
+Next: user submits WC mode suite, then optional separate BC suite; inspect modes,
+real versus injected transport, raw reset/active timing, UART and clock evidence.
+Prior recovery job38219776 is downloaded and targeted functional recovery passed;
+PLL model inf warnings/reset-only events remain review items. Do not rerun that
+job or claim it is unexecuted based on the preserved older status below.
+Registry/board: existing public-registration policy pending; no configured target
+board, synchronization remains pending until a real board is designated.
+Handoff: work/jieruiz/5/HANDOFF.md. Reviewer pending; Issue stays open for results.
+
 ## 2026-10-20 Recovery Diagnostic
 
 Owner: jieruiz. Repository: rayggxia-workspace/pbit_kings.

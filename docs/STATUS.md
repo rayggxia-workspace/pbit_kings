@@ -15,8 +15,13 @@
 
 2026-10-20 增量：[Issue #3](https://github.com/rayggxia-workspace/pbit_kings/issues/3)
 定向检查后仿中途复位的 1,589 条时序事件。已有事件均处于 core reset 低电平窗口，
-尚不能据此直接忽略。诊断脚本已本地验证，远端三相位 VCS 与后端签核审查待执行；
+最新远端任务38219776的三个相位功能恢复通过，事件均在复位期间，PLL模型停钟
+警告仍保留；后端签核审查待执行，不能据此直接忽略全部事件。
 已通过草稿 [PR #4](https://github.com/rayggxia-workspace/pbit_kings/pull/4) 交付，未合并。
 不宣称问题已修复、时序已清零或 PR #2 已合并。
+
+2026-10-20 新增：[Issue #5](https://github.com/rayggxia-workspace/pbit_kings/issues/5)
+补充PLL旁路/变频后仿脚本，继承PR #4框架，未修改RTL或厂商模型功能行为。
+本地15项检查通过；新模式的远端VCS仍待提交，不用旧版理想PLL测试冒充后端验证。
 
 只维护影响整个项目的摘要，不复制完整任务清单。阶段或关键阻塞变化时更新；普通任务进度保留在 Issue/PR 中。
