@@ -1,5 +1,29 @@
 # jieruiz progress
 
+## 2026-10-20 Recovery Diagnostic
+
+Owner: jieruiz. Repository: rayggxia-workspace/pbit_kings.
+Issue: https://github.com/rayggxia-workspace/pbit_kings/issues/3
+Branch: task/3-reset-recovery-diagnostic.
+Base: task/1-import-chimera at 16bc36c264d5a15ecac2f3c38031b767e2231d21;
+dependent PR #2 remains open, not merged.
+Checkout: tmp/pbit-reset-issue3-20261020 (sparse, reused for this task only).
+Stage: locally verified diagnostic scripts; remote VCS evidence pending.
+PR: pending creation, not merged.
+Scope: sim/backend_recovery_diag_20261020; no RTL/netlist/vendor-model changes.
+Validation: 13 local tests PASS, including original 1,589-event log parser,
+monitor execution and stub-based top syntax; 2 Bash syntax checks PASS;
+management schema PASS. No commercial EDA run on this machine.
+Evidence: original job 38215256; raw licensed inputs/results remain in existing
+authorized local/server storage. No raw simulation logs or PDK uploaded.
+Next: user submits recovery-only all-phases job, downloads the small archive;
+review reset-only events, refill, clock quality and complete snapshot comparison.
+Board: no board.json; prior read:project scope deficiency, synchronization pending.
+Registration: existing public-project registration issue remains pending.
+Handoff: work/jieruiz/3/HANDOFF.md. Do not close Issue #3 before remote evidence/review.
+
+## Import History (Preserved)
+
 Updated: 2026-10-17 Asia/Shanghai. Owner: jieruiz.
 Issue: https://github.com/rayggxia-workspace/pbit_kings/issues/1
 Branch: task/1-import-chimera. Target/base: rayggxia-workspace/pbit_kings/main.

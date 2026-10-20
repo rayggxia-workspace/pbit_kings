@@ -13,4 +13,9 @@
 
 个人进度：[jieruiz](../progress/jieruiz/STATUS.md)。交接：[HANDOFF](../work/jieruiz/1/HANDOFF.md)。
 
+2026-10-20 增量：[Issue #3](https://github.com/rayggxia-workspace/pbit_kings/issues/3)
+定向检查后仿中途复位的 1,589 条时序事件。已有事件均处于 core reset 低电平窗口，
+尚不能据此直接忽略。诊断脚本已本地验证，远端三相位 VCS 与后端签核审查待执行；
+不宣称问题已修复、时序已清零或 PR #2 已合并。
+
 只维护影响整个项目的摘要，不复制完整任务清单。阶段或关键阻塞变化时更新；普通任务进度保留在 Issue/PR 中。
