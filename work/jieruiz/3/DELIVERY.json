@@ -3,6 +3,8 @@
   "owner": "jieruiz",
   "repository": "rayggxia-workspace/pbit_kings",
   "issue": 3,
+  "pull_request": "https://github.com/rayggxia-workspace/pbit_kings/pull/4",
+  "script_commit": "b4576399b0b1d17f8fa59f521ca0b6bb90e68435",
   "base_commit": "16bc36c264d5a15ecac2f3c38031b767e2231d21",
   "package": "backend_recovery_diag_20261020_scripts.zip",
   "package_storage": "existing authorized local a_P_BIT root; user uploads to original server project root",

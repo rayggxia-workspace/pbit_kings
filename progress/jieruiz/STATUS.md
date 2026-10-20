@@ -8,8 +8,9 @@ Branch: task/3-reset-recovery-diagnostic.
 Base: task/1-import-chimera at 16bc36c264d5a15ecac2f3c38031b767e2231d21;
 dependent PR #2 remains open, not merged.
 Checkout: tmp/pbit-reset-issue3-20261020 (sparse, reused for this task only).
-Stage: locally verified diagnostic scripts; remote VCS evidence pending.
-PR: pending creation, not merged.
+Stage: diagnostic scripts pushed for review; remote VCS evidence pending.
+PR: https://github.com/rayggxia-workspace/pbit_kings/pull/4 (draft, not merged).
+Verified script commit: b4576399b0b1d17f8fa59f521ca0b6bb90e68435.
 Scope: sim/backend_recovery_diag_20261020; no RTL/netlist/vendor-model changes.
 Validation: 13 local tests PASS, including original 1,589-event log parser,
 monitor execution and stub-based top syntax; 2 Bash syntax checks PASS;

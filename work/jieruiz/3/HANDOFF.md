@@ -5,7 +5,9 @@ Repository: rayggxia-workspace/pbit_kings. Issue #3.
 Branch: task/3-reset-recovery-diagnostic.
 Base: 16bc36c264d5a15ecac2f3c38031b767e2231d21, dependent import PR #2 open.
 Current delivery commit is the commit containing this file; read `git log -1`.
-PR creation pending; no merge/remote EDA completion is implied.
+Draft PR: https://github.com/rayggxia-workspace/pbit_kings/pull/4 (not merged).
+Verified script commit: b4576399b0b1d17f8fa59f521ca0b6bb90e68435.
+No merge/remote EDA completion is implied.
 
 ## Existing Evidence
 
