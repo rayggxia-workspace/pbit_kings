@@ -5,6 +5,7 @@
   "issue": 5,
   "pull_request": "https://github.com/rayggxia-workspace/pbit_kings/pull/6",
   "source_commit": "be9e1088e28e811a0f11f6d4d85556949a73b2cd",
+  "github_final_sync": "pending: initial script commit a875049 is pushed in draft PR #6; final metadata/test/package provenance commits remain local after two github.com connection failures",
   "base_commit": "05571587a8895d644f73c767bda02fa146ecedca",
   "package": "backend_pll_modes_20261020_scripts.zip",
   "package_storage": "existing authorized local a_P_BIT root; user uploads to original server project root",

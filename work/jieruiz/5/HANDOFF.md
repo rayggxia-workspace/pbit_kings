@@ -9,6 +9,13 @@ Issue status in_review; server mode evidence pending, do not close task.
 Sparse worktree: tmp/pbit-pll-issue5-20261020. Reuse it; no full clone needed.
 Validated script commit: be9e1088e28e811a0f11f6d4d85556949a73b2cd.
 Final ZIP index/SHA-256 and local checks: DELIVERY.json (61,141 bytes, 29 files).
+Final GitHub sync pending: initial implementation a875049 is already pushed in
+draft PR #6, but final metadata/test/provenance commits be9e108 and326c2b2 failed
+to push twice (connection reset, then github.com:443 unreachable). Local final
+ZIP c806992829014dc9819998de53c895d2a480bcee053bdf55a599b135ead10625
+is the delivery authority for server upload. Do not claim draft PR has the final
+package metadata yet. Next publication action is ordinary push of this existing
+branch when connectivity returns, then update PR/Issue receipt to the final ZIP.
 
 ## Goal and Scope
 

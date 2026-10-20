@@ -7,6 +7,10 @@ Branch: task/5-pll-mode-validation; base task/3-reset-recovery-diagnostic,
 05571587a8895d644f73c767bda02fa146ecedca (PR #4 dependency, not merged).
 Sparse checkout: tmp/pbit-pll-issue5-20261020; no new full clone/helper checkout.
 Stage: scripts pushed for review; new real-netlist VCS mode runs pending.
+Final sync caveat: PR currently has initial a875049 implementation; final local
+metadata/test/provenance updates could not push after two github.com network
+failures. Use the final local ZIP in DELIVERY.json; ordinary push/receipt update
+is still pending and is not a blocker for uploading that ZIP to the HPC server.
 PR: https://github.com/rayggxia-workspace/pbit_kings/pull/6 (draft, not merged).
 Validated script commit: be9e1088e28e811a0f11f6d4d85556949a73b2cd;
 final ZIP/provenance in work/jieruiz/5/DELIVERY.json.
