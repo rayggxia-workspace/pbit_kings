@@ -70,6 +70,8 @@ results, do not clone another full checkout. No raw input archive was extracted
 to another full copy. Result archives and vendor files remain at authorized
 local/server locations and are not public GitHub deliverables.
 Public-project registry policy blocker remains in management-hub Issue #3.
-No project board is configured in config/board.json; prior Projects query lacked
-read:project scope. Board sync pending, responsible maintainer/reviewer to be
-designated. Do not broaden credentials or invent a board/card ID.
+No project board is configured in config/board.json. Fresh 2026-10-20 GraphQL
+readback returned 0 visible projectItems for Issue #3 (no query error), not a
+successful board synchronization. A prior scope error is historical, not the
+current query result. Target board/maintainer still need designation; do not
+broaden credentials or invent a board/card ID.

@@ -19,7 +19,8 @@ Evidence: original job 38215256; raw licensed inputs/results remain in existing
 authorized local/server storage. No raw simulation logs or PDK uploaded.
 Next: user submits recovery-only all-phases job, downloads the small archive;
 review reset-only events, refill, clock quality and complete snapshot comparison.
-Board: no board.json; prior read:project scope deficiency, synchronization pending.
+Board: 2026-10-20 readback found 0 visible projectItems for Issue #3;
+no board.json/target board configured, so adding/synchronizing remains pending.
 Registration: existing public-project registration issue remains pending.
 Handoff: work/jieruiz/3/HANDOFF.md. Do not close Issue #3 before remote evidence/review.
 

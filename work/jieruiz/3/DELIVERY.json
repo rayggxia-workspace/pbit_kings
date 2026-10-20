@@ -15,6 +15,7 @@
   "commercial_eda_executed": false,
   "timing_signoff": false,
   "remote_diagnostic_job": null,
+  "board_readback": "2026-10-20: Issue #3 visible projectItems.totalCount=0; no configured target board; synchronization pending",
   "configuration": {
     "core_mhz": 300,
     "precision": "10ps",
