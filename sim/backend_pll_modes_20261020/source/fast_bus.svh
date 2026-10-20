@@ -7,11 +7,14 @@ logic pll_req=0, pll_write=0;
 logic [7:0] pll_addr=0;
 logic [15:0] pll_data=0;
 bit fast_active=0;
+bit safe_bus_handoff=1;
 integer fast_transactions=0;
 realtime reset_extra_ns=0.0;
 wire launch_clk = dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_wr_en_ff_q_o_reg_0_.CK;
+wire handoff_clk = dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_.CK;
 
 task automatic begin_fast_bus();
+    if (safe_bus_handoff) begin @(negedge handoff_clk); #0.30; end
     fast_wr=0; fast_rd=0; fast_addr=0; fast_data=0;
     force dut.u_pbit_top_u_uart_reg_subsystem_reg_wr_en_w = fast_wr;
     force dut.u_pbit_top_u_uart_reg_subsystem_reg_rd_en_w = fast_rd;
@@ -23,6 +26,7 @@ endtask
 task automatic end_fast_bus();
     fast_wr=0; fast_rd=0;
     repeat (4) @(negedge launch_clk);
+    if (safe_bus_handoff) begin @(negedge handoff_clk); #0.30; end
     release dut.u_pbit_top_u_uart_reg_subsystem_reg_wr_en_w;
     release dut.u_pbit_top_u_uart_reg_subsystem_reg_rd_en_w;
     release dut.u_pbit_top_u_uart_reg_subsystem_reg_addr_w;

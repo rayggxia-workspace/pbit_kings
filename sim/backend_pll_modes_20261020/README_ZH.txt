@@ -1,16 +1,38 @@
 PLL 旁路、变频与上板流程后仿
-版本：20261020_pll_modes_v1
+版本：20261020_pll_modes_v2
 日期：2026-10-20；跟踪：rayggxia-workspace/pbit_kings Issue #5
 
 一、用途与边界
 
 使用已有 backend_261014 DRC/SI 网表、PLL_20260916 厂商行为模型和配套 SDF，
 补充最新后端尚无完整通过证据的旁路/跨频率重配。不是重跑大 MaxCut 或功耗。
-本地已执行的检查见 LOCAL_VALIDATION.txt；真实网表的远端 VCS 尚待用户提交。
+本地已执行的检查见 LOCAL_VALIDATION.txt；v1的真实网表任务38227554已检查，
+v2尚待用户提交。旁路检查器由本项目testbench编写，不来自厂商或后端。
 不修改芯片 RTL、不修补厂商 PLL 功能行为、不强制时钟或阵列状态、不生成大 VCD。
 仅沿用已有窄范围同步首级 notifier profile，时序检查和所有原始事件仍保留。
 
-二、三个测试
+二、三组完整流程与三项接管对照
+
+v1任务38227554暴露的疑点分开验证：
+  1. 25MHz旁路高/低电平20.20/19.80ns，但完整周期40ns。旧版强制对称检查过严。
+     v2持续检查完整周期误差不超过40ps，高/低脉宽分别记录并限制在半周期±10%。
+     旁路还逐沿比对真实dut.ref_clk的极性和0..2ns传播延迟。这些是诊断预算，
+     不是工艺库WIDTH规格；SDF中的WIDTH/hold等检查仍全部启用。
+  2. 地址寄存器req_addr[3]发生30ps的hold不足。它的Q有反馈，快速接口的force
+     可能改变反馈D；其CK为CTS_8，原接口启动寄存器CK为CTS_5，不假定两者同相。
+     bus_legacy保留原接管方式；bus_safe在该地址寄存器实际CK下降沿后0.30ns
+     接管/释放，并重复8次；pin_only完全不接管总线，作无注入对照。
+     三项只做启动和接口隔离，不宣称完成计算。CK/D/Q、注入变化都记录在trace。
+     只有旧方式复现目标违例、新方式和无注入对照干净时才支持“测试台引入”判断。
+  3. 独立model_probe在没有芯片网表/SDF的情况下，运行同一厂商PLL_20260916。
+     比较厂商原始1ps模型和仅精度转换的10ps副本，五种EN关闭相位；保留原始警告
+     和CKOUT/CKTST短脉冲。不修补厂商行为、不伪造锁定，也不据此宣布真实硅片有毛刺。
+  4. 复位期间的MAC/RNG违例仍保留并按时刻/模块分类；各完整模式恢复计算后，
+     额外读取10页共100字/3200位snapshot，任何X立即失败。该检查不等于所有内部
+     寄存器都已刷新，也不能替代后端recovery/removal和复位树STA。
+
+all包含以下六个case和独立model_probe，芯片网表只编译一次。quick只执行三项
+接管对照和model_probe，不执行计算/完整切频流程。需要完整检查时使用all。
 
 bypass：直接从上电/外部复位进入 25 MHz BP 旁路。
   PLL 正常配置通过真实 1 Mbaud UART 完成五笔写/读/APPLY/STATUS/ACTIVE。
@@ -59,19 +81,19 @@ N=24、SELECT=0，PLL模式VCO为600 MHz；150 MHz改变OD，旁路置BP。
 
 四、上传并运行
 
-只上传 backend_pll_modes_20261020_scripts.zip 到原服务器项目根目录。
+只上传 backend_pll_modes_20261020_v2_scripts.zip 到原服务器项目根目录。
 网表/SDF/库沿用已有位置，无需重复上传。包里有全部新testbench及流程代码，
 没有厂商模型/工艺库/芯片网表；它们需继续使用服务器已上传版本。
 
 BASE=/public3/home/t6s011227/pbit_chimera_pipeline_20260920
 cd "$BASE"
-unzip -o backend_pll_modes_20261020_scripts.zip
+unzip -o backend_pll_modes_20261020_v2_scripts.zip
 cd backend_pll_modes_20261020
-grep -qx '20261020_pll_modes_v1' VERSION.txt
+grep -qx '20261020_pll_modes_v2' VERSION.txt
 python3 run.py verify .
 bash submit.sh all
 
-默认一个Slurm任务：WC最大SDF，一次编译，依次执行bypass/switch/errors。
+默认一个Slurm任务：WC最大SDF，一次芯片编译，执行六项case和两个极小模型探针。
 资源4 CPU、8G；普通串行VCS，无FGP要求。申请4核不代表获得四核仿真加速。
 没有自设wall上限（Slurm --time=0、MAX_WALL_HOURS=0）；仍受集群策略限制。
 有真实UART，运行时间不是纯总线任务的几分钟，不承诺具体完成时限。
@@ -83,10 +105,12 @@ bash submit.sh all
 BC是已提供的FF/1.32V/-40C SDF场景，不是要求实物把电源调成1.32V。
 VCS延时来自选定SDF；DB/SPEF只用于输入版本核验，没有运行PT/功耗/签核STA。
 
-只跑一项可用：bash submit.sh bypass（或switch、errors）。
+先快速隔离可用：bash submit.sh quick。它不证明旁路/变频完整功能。
+只跑一项可用：bash submit.sh bypass（或switch、errors、bus_legacy、bus_safe、pin_only）。
 若同一脚本、同一corner已有成功编译，仅重跑剩余项可严格复用：
   BUILD_JOB="$BASE/backend_pll_modes_20261020/results/旧JOBID/build" bash submit.sh errors
 源/设置/输入哈希或corner不一致会拒绝，不会静默用旧二进制。
+不能把38227554的v1 build用于v2，必须重新编译。v2同版本的quick与all可复用。
 保持旧build及其输入/符号链接目标，不要运行中删除。
 
 默认输入：$BASE/backend_inputs_261014。
@@ -101,7 +125,9 @@ VCS延时来自选定SDF；DB/SPEF只用于输入版本核验，没有运行PT/�
 结果：results/<JOBID>/
 自动打包：backend_pll_modes_<JOBID>.tar.gz
 
-先读 diagnostic_summary.json，再读各 cases/<名字>/audit.json。
+先读 suspect_diagnosis.json、diagnostic_summary.json，再读各cases/<名字>/audit.json。
+model_probe/model_summary.json：独立厂商模型的双精度停启结果及原始trace/log。
+clock_metrics.jsonl：完整周期、高低脉宽、旁路参考沿的传播延迟。
 epochs.jsonl：每档配置、实际脉宽范围、串口笔数、复位/启动间隔及问题范围。
 transactions.jsonl：真实PLL UART、真实核心UART和请求边界注入分别记载。
 checks.jsonl：逐项断言清单；mode_trace.csv：复位与PLL引脚、短窗口时钟。
@@ -109,6 +135,9 @@ simulation.log：保留原始timing事件和PLL模型警告，不仅留下PASS�
 
 功能错误、X/错误串口回复、频率/脉宽异常、缺覆盖、非复位窗口时序事件或短脉冲
 会失败。复位窗口事件、已有同步首级事件和模型警告保留分类，不视为芯片签核。
+唯一预期负对照是bus_legacy：若只复现目标地址hold且与注入变化相邻，原始失败仍
+保留为negative_control_reproduced，汇总不把它当成新方式失败；其他新违例不豁免。
+若旧方式未复现或safe/pin_only也有问题，因果判断明确保持未解决，不能自动归因。
 FUNCTIONAL_PASS_REVIEW_REQUIRED表示定向功能完成但有事件待审，不是时序清零。
 DIAGNOSTICS_COMPLETE.txt也仅表示全部选定case执行结束；需结合summary判断。
 

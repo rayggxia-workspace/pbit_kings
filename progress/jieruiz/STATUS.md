@@ -1,5 +1,25 @@
 # jieruiz progress
 
+## 2026-10-20 PLL v2 Suspect Diagnostics
+
+Issue5 / draft PR6, same task branch and sparse checkout. User requested scripts
+for every observed suspect. Remote v1 job38227554 reviewed: exact final29-file
+source manifest, native SDF100%; 300/150 functional epochs and18 error checks
+complete. Bypass abort is the project-written symmetric-half-period guard;
+20.20/19.80ns still forms40ns. One extra30ps req_addr[3] hold event may be Q-feedback
+disturbed by bus force; physical CK isCTS_8 vs write-launchCTS_5. Not yet waived.
+82 reset-window MAC/RNG events and vendor inf/10ps CKTST pulse remain for review.
+
+Local v2 implements period/duty/reference-edge diagnostics; legacy/safe/no-bus
+controls with CK/D/Q/injection trace; native1ps and matched10ps unchanged-vendor
+stop probes; full3200-bit snapshot X check after each complete mode. No DUT/SDF
+patch, no new waiver, no power rerun. 21 local tests PASS including actual-host,
+handoff-slot and vendor-port elaboration; no new real-netlist VCS execution.
+New ZIP/provenance recorded in DELIVERY.json after final checks. Publication
+state and remaining next steps are in work/jieruiz/5/HANDOFF.md. Remote v2 pending.
+Do not reuse v1 build; source identity intentionally changes. Existing raw result
+archives kept read-only; no redundant full checkout or large extraction created.
+
 ## 2026-10-20 PLL Mode Coverage
 
 Owner: jieruiz. Issue: https://github.com/rayggxia-workspace/pbit_kings/issues/5.

@@ -4,12 +4,14 @@ module tb_gate_pipeline_maxcut_lite;
     `include "settings.svh"
     gate_pipeline_env env();
     string case_name,epoch_name,selected_corner;
-    integer epoch=0,mhz=300,trace_fd,epoch_fd,uart_fd,check_fd,checks=0;
+    integer epoch=0,mhz=300,trace_fd,epoch_fd,uart_fd,check_fd,clock_fd,checks=0;
     integer pll_pin_count=0,core_pin_count=0,pll_fast_count=0;
     integer phase_pll_pins,phase_core_pins;
     bit stable=0,expect_reset=0,core_busy_before_apply=0;
     realtime core_half=1.666666667,test_half=53.333333333;
     realtime trace_until=0,t_reset=-1,t_off=-1,t_on=-1,t_release=-1;
+    realtime ref_rise=-1,ref_fall=-1,bypass_lag_min=1.0e9,bypass_lag_max=0;
+    bit probe_case=0;
     reg [31:0] value;
     pll_clock_guard #(.ID(0)) core_guard(env.dut.core_clk,env.dut.core_rst_n,stable,core_half);
     pll_clock_guard #(.ID(1)) test_guard(env.dut.u_pll.CKTST,env.dut.core_rst_n,stable,test_half);
@@ -35,10 +37,38 @@ module tb_gate_pipeline_maxcut_lite;
     always @(env.dut.u_pll.BP) trace("pll_bp",{31'd0,env.dut.u_pll.BP});
     always @(env.dut.u_pll.N) trace("pll_n",{24'd0,env.dut.u_pll.N});
     always @(env.dut.u_pll.OD) trace("pll_od",{30'd0,env.dut.u_pll.OD});
-    always @(env.dut.core_clk)
+    always @(env.dut.ref_clk) begin
+        if (env.dut.ref_clk===1) ref_rise=$realtime;
+        if (env.dut.ref_clk===0) ref_fall=$realtime;
+        if ($realtime<=trace_until) trace("ref_clk",{31'd0,env.dut.ref_clk});
+    end
+    always @(env.dut.core_clk) begin : BYPASS_EDGE
+        realtime lag;
         if ($realtime<=trace_until) trace("core_clk",{31'd0,env.dut.core_clk});
+        if (stable && mhz==25 && env.dut.core_rst_n===1) begin
+            lag=$realtime-((env.dut.core_clk===1)?ref_rise:ref_fall);
+            if (env.dut.core_clk!==env.dut.ref_clk || lag<0 || lag>2.0)
+                $fatal(1,"BYPASS_REFERENCE_MISMATCH lag=%f",lag);
+            if (lag<bypass_lag_min) bypass_lag_min=lag;
+            if (lag>bypass_lag_max) bypass_lag_max=lag;
+        end
+    end
+    always @(env.dut.u_pll.CKOUT1)
+        if ($realtime<=trace_until) trace("pll_ckout",{31'd0,env.dut.u_pll.CKOUT1});
     always @(env.dut.u_pll.CKTST)
         if ($realtime<=trace_until) trace("cktst",{31'd0,env.dut.u_pll.CKTST});
+    always @(env.fast_active) begin
+        trace_until=$realtime+150;
+        trace("fast_active",{31'd0,env.fast_active});
+    end
+    always @(env.fast_addr)
+        if ($realtime<=trace_until) trace("fast_addr",{16'd0,env.fast_addr});
+    always @(env.dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_.CK)
+        if ($realtime<=trace_until) trace("addr3_ck",{31'd0,env.dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_.CK});
+    always @(env.dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_.D)
+        if ($realtime<=trace_until) trace("addr3_d",{31'd0,env.dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_.D});
+    always @(env.dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_.Q)
+        if ($realtime<=trace_until) trace("addr3_q",{31'd0,env.dut.u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_.Q});
 
     function automatic logic [15:0] config_for(input integer f);
         case (f)
@@ -104,6 +134,7 @@ module tb_gate_pipeline_maxcut_lite;
     task automatic begin_epoch(input string name,input integer f,input bit resetting);
         stable=0; epoch++; epoch_name=name; mhz=f; expect_reset=resetting;
         t_reset=-1; t_off=-1; t_on=-1; t_release=-1;
+        bypass_lag_min=1.0e9; bypass_lag_max=0;
         phase_pll_pins=pll_pin_count; phase_core_pins=core_pin_count;
         $display("[PLL_MODE_BEGIN] epoch=%0d name=%s mhz=%0d",epoch,name,f);
     endtask
@@ -122,11 +153,16 @@ module tb_gate_pipeline_maxcut_lite;
         core_half=500.0/mhz; env.CORE_BIT_NS=500000.0/mhz;
         stable=1;
         repeat (12) @(negedge env.dut.core_clk);
-        env.begin_fast_bus;
-        env.core_read_check(4,0); env.core_read_check(8,0); env.core_read_check(12,0);
-        env.core_read_check(16'h0010,0);
-        env.end_fast_bus;
-        check("startup_and_core_configuration_reset");
+        if (case_name=="pin_only") begin
+            #200;
+            check("startup_without_bus_override");
+        end else begin
+            env.begin_fast_bus;
+            env.core_read_check(4,0); env.core_read_check(8,0); env.core_read_check(12,0);
+            env.core_read_check(16'h0010,0);
+            env.end_fast_bus;
+            check("startup_and_core_configuration_reset");
+        end
     endtask
     task automatic start_pin_mode(input string name,input integer f,input bit cold);
         logic [15:0] cfg;
@@ -147,7 +183,7 @@ module tb_gate_pipeline_maxcut_lite;
     endtask
     task automatic tiny_problem;
         logic [31:0] status,snapshot;
-        integer n,polls;
+        integer n,polls,page,word_index;
         env.begin_fast_bus;
         env.core_write(16'h0014,32'h1f1f1f1f);
         env.core_write(16'h0034,32'hffffffff);
@@ -176,18 +212,37 @@ module tb_gate_pipeline_maxcut_lite;
         env.core_read(16'h00a8,snapshot);
         if ((snapshot&32'h11)!==1 || (^snapshot===1'bx))
             $fatal(1,"Tiny MaxCut snapshot mismatch %h",snapshot);
+        // All 3200 outputs are checked for X after reconfiguration, not just
+        // the two exercised bits. This is not proof every internal flop is known.
+        for (page=0;page<10;page++) begin
+            env.core_write(16'h0010,page); env.core_write(0,8);
+            env.core_read(8,status);
+            if (!status[5] || status[6]) $fatal(1,"Snapshot page invalid page=%0d",page);
+            for (word_index=0;word_index<10;word_index++) begin
+                env.core_read(16'h00a8+word_index*4,snapshot);
+                if (^snapshot===1'bx) $fatal(1,"Full snapshot X page=%0d word=%0d",page,word_index);
+                if (page==0 && word_index==0 && (snapshot&32'h11)!==1)
+                    $fatal(1,"Full snapshot exercised bits changed");
+            end
+        end
         env.core_write(0,16);
         env.core_read_check(12,0);
         env.end_fast_bus;
         check("tiny_maxcut_run_and_snapshot");
     endtask
+    task automatic record_epoch;
+        if (core_guard.edges<20 || test_guard.edges<4) $fatal(1,"Insufficient clock observations");
+        $fdisplay(epoch_fd,"{\"epoch\":%0d,\"name\":\"%s\",\"mhz\":%0d,\"config\":%0d,\"core_baud\":%0d,\"core_pin_transactions\":%0d,\"pll_pin_transactions\":%0d,\"core_half_min_ns\":%.3f,\"core_half_max_ns\":%.3f,\"test_half_min_ns\":%.3f,\"test_half_max_ns\":%.3f,\"core_edges\":%0d,\"test_edges\":%0d,\"enable_to_release_ns\":%.3f,\"reset_before_disable_ns\":%.3f,\"tiny_problem\":\"%s\",\"snapshot_mask\":%0d,\"snapshot_expected\":%0d,\"sweeps\":%0d,\"actual_majority\":1,\"snapshot_words_checked\":%0d}",epoch,epoch_name,mhz,config_for(mhz),mhz*1000000/500,core_pin_count-phase_core_pins,pll_pin_count-phase_pll_pins,core_guard.minimum,core_guard.maximum,test_guard.minimum,test_guard.maximum,core_guard.edges,test_guard.edges,t_release-t_on,t_off-t_reset,probe_case?"none":"two_node_maxcut",probe_case?0:17,probe_case?0:1,probe_case?0:2,probe_case?0:100);
+        $fflush(epoch_fd);
+        $fdisplay(clock_fd,"{\"epoch\":%0d,\"signal\":\"core\",\"period_min_ns\":%.3f,\"period_max_ns\":%.3f,\"high_min_ns\":%.3f,\"high_max_ns\":%.3f,\"low_min_ns\":%.3f,\"low_max_ns\":%.3f,\"periods\":%0d,\"bypass_lag_min_ns\":%.3f,\"bypass_lag_max_ns\":%.3f}",epoch,core_guard.period_min,core_guard.period_max,core_guard.high_min,core_guard.high_max,core_guard.low_min,core_guard.low_max,core_guard.periods,bypass_lag_min,bypass_lag_max);
+        $fdisplay(clock_fd,"{\"epoch\":%0d,\"signal\":\"test\",\"period_min_ns\":%.3f,\"period_max_ns\":%.3f,\"high_min_ns\":%.3f,\"high_max_ns\":%.3f,\"low_min_ns\":%.3f,\"low_max_ns\":%.3f,\"periods\":%0d}",epoch,test_guard.period_min,test_guard.period_max,test_guard.high_min,test_guard.high_max,test_guard.low_min,test_guard.low_max,test_guard.periods);
+        $fflush(clock_fd);
+    endtask
     task automatic exercise_epoch;
         core_pin(1,4,1,0); core_pin(0,4,0,1);
         check("dynamic_baud_pin_uart_read_write");
         tiny_problem;
-        if (core_guard.edges<20 || test_guard.edges<4) $fatal(1,"Insufficient clock observations");
-        $fdisplay(epoch_fd,"{\"epoch\":%0d,\"name\":\"%s\",\"mhz\":%0d,\"config\":%0d,\"core_baud\":%0d,\"core_pin_transactions\":%0d,\"pll_pin_transactions\":%0d,\"core_half_min_ns\":%.3f,\"core_half_max_ns\":%.3f,\"test_half_min_ns\":%.3f,\"test_half_max_ns\":%.3f,\"core_edges\":%0d,\"test_edges\":%0d,\"enable_to_release_ns\":%.3f,\"reset_before_disable_ns\":%.3f,\"tiny_problem\":\"two_node_maxcut\",\"snapshot_mask\":17,\"snapshot_expected\":1,\"sweeps\":2,\"actual_majority\":1}",epoch,epoch_name,mhz,config_for(mhz),mhz*1000000/500,core_pin_count-phase_core_pins,pll_pin_count-phase_pll_pins,core_guard.minimum,core_guard.maximum,test_guard.minimum,test_guard.maximum,core_guard.edges,test_guard.edges,t_release-t_on,t_off-t_reset);
-        $fflush(epoch_fd);
+        record_epoch;
         check("mode_epoch_complete");
     endtask
     task automatic bad_config(input logic [15:0] cfg,input logic [3:0] err,input string name);
@@ -245,11 +300,14 @@ module tb_gate_pipeline_maxcut_lite;
         integer fd;
         trace_fd=$fopen("mode_trace.csv","w"); epoch_fd=$fopen("epochs.jsonl","w");
         uart_fd=$fopen("transactions.jsonl","w"); check_fd=$fopen("checks.jsonl","w");
-        if (!trace_fd || !epoch_fd || !uart_fd || !check_fd) $fatal(1,"Cannot open evidence files");
+        clock_fd=$fopen("clock_metrics.jsonl","w");
+        if (!trace_fd || !epoch_fd || !uart_fd || !check_fd || !clock_fd) $fatal(1,"Cannot open evidence files");
         $fdisplay(trace_fd,"ns,signal,value,epoch");
         trace("core_rst_n",{31'd0,env.dut.core_rst_n});
         if (!$value$plusargs("CASE=%s",case_name) || !$value$plusargs("SDF_CORNER=%s",selected_corner))
             $fatal(1,"Missing mode case/corner");
+        probe_case=(case_name=="bus_legacy" || case_name=="bus_safe" || case_name=="pin_only");
+        env.safe_bus_handoff=(case_name!="bus_legacy");
         if (selected_corner!=SDF_CORNER) $fatal(1,"Runtime/build SDF mismatch");
         $printtimescale(env.dut);
         $display("[POSTLAYOUT_SDF_BEGIN] corner=%s",selected_corner);
@@ -265,12 +323,23 @@ module tb_gate_pipeline_maxcut_lite;
                 start_pin_mode("same300_apply",300,0); exercise_epoch;
             end
             "errors": error_case;
+            "bus_legacy","bus_safe","pin_only": begin
+                start_pin_mode("probe300",300,1);
+                if (case_name=="bus_safe") begin
+                    repeat (8) begin
+                        env.begin_fast_bus;
+                        env.core_read_check(4,0); env.core_read_check(8,0);
+                        env.end_fast_bus;
+                    end
+                end
+                #200; record_epoch; check("bus_probe_complete");
+            end
             default: $fatal(1,"Unknown case");
         endcase
         stable=0;
         fd=$fopen("mode_result.json","w");
         if (!fd) $fatal(1,"Cannot write result");
-        $fdisplay(fd,"{\"release\":\"20261020_pll_modes_v1\",\"case\":\"%s\",\"corner\":\"%s\",\"status\":\"FUNCTIONAL_PASS\",\"epochs\":%0d,\"checks\":%0d,\"pll_pin_transactions\":%0d,\"core_pin_transactions\":%0d,\"pll_directed_transactions\":%0d,\"power_estimated\":false,\"timing_signoff\":false}",case_name,selected_corner,epoch,checks,pll_pin_count,core_pin_count,pll_fast_count);
+        $fdisplay(fd,"{\"release\":\"20261020_pll_modes_v2\",\"case\":\"%s\",\"corner\":\"%s\",\"status\":\"FUNCTIONAL_PASS\",\"epochs\":%0d,\"checks\":%0d,\"pll_pin_transactions\":%0d,\"core_pin_transactions\":%0d,\"pll_directed_transactions\":%0d,\"power_estimated\":false,\"timing_signoff\":false,\"probe_only\":%0d,\"safe_bus_handoff\":%0d}",case_name,selected_corner,epoch,checks,pll_pin_count,core_pin_count,pll_fast_count,probe_case,env.safe_bus_handoff);
         $fclose(fd); $fflush();
         $display("[PLL_MODES_FUNCTIONAL] PASS case=%s epochs=%0d NOT_TIMING_SIGNOFF",case_name,epoch);
         $finish;

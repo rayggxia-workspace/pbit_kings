@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
-// Shared pin-only environment for the synthesized pbit_io_wrapper. Functional
-// checks intentionally avoid DUT hierarchy so DC ungrouping cannot break them.
+// Mixed pin/request-boundary environment for the reviewed postlayout wrapper.
+// Targeted injection and diagnostics depend on the preflight-checked hierarchy.
 module gate_pipeline_env;
     `include "settings.svh"
     localparam realtime REF_PERIOD_NS = 40.0;

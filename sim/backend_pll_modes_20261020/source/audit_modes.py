@@ -7,7 +7,7 @@ import re
 from collections import Counter
 from coverage_evidence import bind,runtime_errors
 from sync_policy import ALLOWED
-from plan import RELEASE,PLANS,MODES,ERROR_CHECKS
+from plan import RELEASE,PLANS,MODES,ERROR_CHECKS,PROBES
 
 
 def rows(path):
@@ -42,31 +42,87 @@ def timing(text,intervals):
     return result
 
 
+def injection_evidence(trace,events):
+    transitions=[];pins=[]
+    for r in csv.DictReader(io.StringIO(trace)):
+        if r['signal'] in ('fast_active','fast_addr'):
+            transitions.append(float(r['ns']))
+        if r['signal'].startswith('addr3_'):
+            pins.append(r)
+    details=[]
+    for e in events:
+        if e['reset_window'] or e['existing_first_stage_profile']:continue
+        item=dict(e)
+        item['nearest_bus_transition_ns']=min((abs(t-s) for t in e['pin_event_ns'] for s in transitions),default=None)
+        item['address_feedback_candidate']=('req_addr_ff_q_o_reg_3_' in e['instance'] and e['check']=='setuphold')
+        details.append(item)
+    return dict(outside_details=details,address_pin_trace_rows=len(pins))
+
+
+def partial(root,case,error):
+    root=Path(root)
+    text=(root/'simulation.log').read_text(errors='replace') if (root/'simulation.log').exists() else ''
+    trace=(root/'mode_trace.csv').read_text() if (root/'mode_trace.csv').exists() else ''
+    fail=[str(error)]
+    try:intervals=windows(trace)
+    except ValueError as ex:intervals=[];fail.append(str(ex))
+    try:events=timing(text,intervals)
+    except ValueError as ex:events=[];fail.append(str(ex))
+    report=dict(case=case,status='DIAGNOSTIC_EXECUTION_FAILED',functional_evidence_complete=False,
+        failures=fail,raw_timing_events=len(events),timing_events=events,
+        fatal_messages=re.findall(r'(?m)^.*(?:Fatal:|CLOCK_GUARD_|BYPASS_REFERENCE_|Full snapshot X).*$',text),
+        timing_signoff=False)
+    report.update(injection_evidence(trace,events))
+    (root/'audit.json').write_text(json.dumps(report,indent=2)+'\n')
+    return report
+
+
 def audit(root,case,selected_corner,build):
     root=Path(root);fail=[]
     result=json.loads((root/'mode_result.json').read_text())
     epochs=rows(root/'epochs.jsonl');tx=rows(root/'transactions.jsonl');checks=rows(root/'checks.jsonl')
     trace=(root/'mode_trace.csv').read_text();text=(root/'simulation.log').read_text(errors='replace')
     expected=PLANS[case]
+    probe=case in PROBES
     for key,value in dict(release=RELEASE,case=case,corner=selected_corner,status='FUNCTIONAL_PASS',
                           epochs=len(expected),power_estimated=False,timing_signoff=False).items():
         if result.get(key)!=value:fail.append('Bad result '+key)
     if len(epochs)!=len(expected):fail.append('Missing mode epochs')
     for i,((name,f),row) in enumerate(zip(expected,epochs),1):
         fields=dict(epoch=i,name=name,mhz=f,config=MODES[f],core_baud=f*1000000//500,
-                    tiny_problem='two_node_maxcut',snapshot_mask=17,snapshot_expected=1,sweeps=2,actual_majority=1,
-                    core_pin_transactions=2,pll_pin_transactions=0 if case=='errors' and i==2 else 5)
+                    tiny_problem='none' if probe else 'two_node_maxcut',snapshot_mask=0 if probe else 17,
+                    snapshot_expected=0 if probe else 1,sweeps=0 if probe else 2,actual_majority=1,
+                    snapshot_words_checked=0 if probe else 100,
+                    core_pin_transactions=0 if probe else 2,pll_pin_transactions=0 if case=='errors' and i==2 else 5)
         if any(row.get(k)!=v for k,v in fields.items()):fail.append('Mode scope mismatch '+name)
         for prefix,half in (('core',500.0/f),('test',500.0/9.375)):
             low=row.get(prefix+'_half_min_ns',-1);high=row.get(prefix+'_half_max_ns',-1)
-            if not half-.04<=low<=high<=half+.04:fail.append('Bad clock '+name+' '+prefix)
+            if not half*.9<=low<=high<=half*1.1:fail.append('Bad clock pulse '+name+' '+prefix)
         if row.get('core_edges',0)<20 or row.get('test_edges',0)<4:fail.append('Insufficient clock samples '+name)
         if row.get('enable_to_release_ns',0)<14920:fail.append('Startup wait too short '+name)
         if i>1 and row.get('reset_before_disable_ns',0)<100:fail.append('Missing reset hold '+name)
         names=[c['name'] for c in checks if c['epoch']==i]
-        for item in ('startup_and_core_configuration_reset','dynamic_baud_pin_uart_read_write',
-                     'tiny_maxcut_run_and_snapshot','mode_epoch_complete'):
+        required=(('startup_without_bus_override' if case=='pin_only' else 'startup_and_core_configuration_reset',
+                   'bus_probe_complete') if probe else
+                  ('startup_and_core_configuration_reset','dynamic_baud_pin_uart_read_write',
+                   'tiny_maxcut_run_and_snapshot','mode_epoch_complete'))
+        for item in required:
             if names.count(item)!=1:fail.append('Missing/duplicate mode check '+name+' '+item)
+    metrics=rows(root/'clock_metrics.jsonl')
+    if len(metrics)!=2*len(expected):fail.append('Missing clock metrics')
+    for i,(_,f) in enumerate(expected,1):
+        for signal,half in (('core',500.0/f),('test',500.0/9.375)):
+            found=[r for r in metrics if r.get('epoch')==i and r.get('signal')==signal]
+            if len(found)!=1:fail.append('Missing/duplicate clock metric');continue
+            r=found[0]
+            if not 2*half-.04<=r.get('period_min_ns',-1)<=r.get('period_max_ns',-1)<=2*half+.04:
+                fail.append('Bad full clock period')
+            for part in ('high','low'):
+                if not half*.9<=r.get(part+'_min_ns',-1)<=r.get(part+'_max_ns',-1)<=half*1.1:
+                    fail.append('Bad clock duty/pulse')
+            if r.get('periods',0)<2:fail.append('Insufficient complete periods')
+            if signal=='core' and f==25 and not 0<=r.get('bypass_lag_min_ns',-1)<=r.get('bypass_lag_max_ns',-1)<=2:
+                fail.append('Bypass not tracking reference clock')
     if case=='errors':
         count=Counter(c['name'] for c in checks)
         if any(count[x]!=1 for x in ERROR_CHECKS):fail.append('Missing/duplicate directed error coverage')
@@ -76,7 +132,7 @@ def audit(root,case,selected_corner,build):
                              ('pll_directed_transactions','PLL_REQUEST_BOUNDARY')):
         if result.get(field)!=counts[transport]:fail.append('Transport count mismatch '+transport)
     if counts['PLL_PIN_UART']!=5*len(expected)+(3-5 if case=='errors' else 0):fail.append('PLL pin UART coverage count')
-    if counts['CORE_PIN_UART']!=2*len(expected)+(2 if case=='errors' else 0):fail.append('Core pin UART coverage count')
+    if counts['CORE_PIN_UART']!=(0 if probe else 2*len(expected)+(2 if case=='errors' else 0)):fail.append('Core pin UART coverage count')
     if case=='errors':
         directed=[t for t in tx if t['transport']=='PLL_REQUEST_BOUNDARY']
         early=[t for t in directed if t['epoch']==1]
@@ -166,6 +222,13 @@ def audit(root,case,selected_corner,build):
         raw_timing_events=len(events),reset_window_events=sum(e['reset_window'] for e in unexpected),
         outside_reset_events=len(outside),existing_profile_events=len(events)-len(unexpected),
         model_and_runtime_warnings=warnings,short_clock_pulses=pulses,reset_windows_ns=intervals,sdf_coverage=proof,
-        timing_signoff=False,analog_lock_verified=False,full_uart_end_to_end=False)
+        clock_metrics=metrics,probe_only=probe,timing_signoff=False,analog_lock_verified=False,full_uart_end_to_end=False,
+        clock_policy='Period +/-40ps; high/low +/-10%; bypass reference lag 0..2ns. Diagnostic limits, not foundry WIDTH signoff.')
+    report.update(injection_evidence(trace,events))
+    details=report['outside_details']
+    report['negative_control_reproduced']=(case=='bus_legacy' and functional_ok and bool(details) and
+        fail==['Timing events outside definite reset windows'] and all(
+        d['address_feedback_candidate'] and d['nearest_bus_transition_ns'] is not None and
+        d['nearest_bus_transition_ns']<=2 for d in details))
     (root/'audit.json').write_text(json.dumps(report,indent=2)+'\n')
     return report

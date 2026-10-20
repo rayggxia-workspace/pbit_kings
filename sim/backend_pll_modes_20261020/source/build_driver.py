@@ -25,6 +25,8 @@ def main():
         mode_plans=PLANS,full_uart_end_to_end=False,transport='MIXED_EXPLICITLY_LOGGED',
         pll_transport='PIN_UART_NORMAL_MODES; REQUEST_BOUNDARY_SHORT_BUSY_AND_INVALID_CONFIG',
         core_transport='PIN_UART_PROBES; REQUEST_BOUNDARY_TINY_PROBLEM',
+        safe_handoff_clock='UART req_addr[3] physical CK; falling edge +0.30ns; acquisition and release only',
+        negative_control='bus_legacy retains the old immediate acquisition/release timing',
         DB_usage='Input identity only; VCS delays from chosen SDF and generic Verilog cells. No PT run.',
         timing_corner='SS 1.08 V 125 C WC SDF' if selected=='WC' else 'FF 1.32 V -40 C BC SDF',
         power_estimated=False,timing_signoff=False,analog_lock_verified=False,

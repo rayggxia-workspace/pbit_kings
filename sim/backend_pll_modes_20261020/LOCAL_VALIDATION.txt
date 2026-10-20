@@ -1,8 +1,8 @@
-Release: 20261020_pll_modes_v1
+Release: 20261020_pll_modes_v2
 Date: 2026-10-20 Asia/Shanghai
 
 Actual local checks:
-- 15 Python unittest methods PASS (Python 3.8.1, standard library).
+- 21 Python unittest methods PASS (Python 3.8.1, standard library; 39.19s).
 - Python source parsed against Python 3.6 grammar: PASS.
 - Full new SV top with the actual host environment elaborated in XSim 2018.3.
   The chip was replaced by a declaration-only stub. This is NOT a gate-level run.
@@ -26,6 +26,11 @@ XSim was used for those tests instead. Earlier XSim host tests exposed simulator
 automatic-task limitations and a synthetic-peer byte-boundary race; final
 serialized host/back-to-back codec tests pass. No failing run is called PASS.
 
-No real postlayout netlist, vendor PLL, SDF simulation, new DC/PT power run,
+The actual vendor PLL ports and isolation TB are also elaborated locally without
+executing a vendor analog/silicon model. New clock tests accept asymmetric duty
+at the right period, reject wrong periods/runt pulses/stopped clocks, and audit
+negative controls without hiding their raw timing failure.
+
+No real postlayout netlist/SDF simulation, new DC/PT power run,
 analog lock/jitter verification or hardware signoff was performed locally.
 WC/BC support still requires the user to submit the corresponding VCS jobs.

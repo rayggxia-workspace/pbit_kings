@@ -69,7 +69,7 @@ def inputs():
               'u_pbit_top_u_uart_reg_subsystem_reg_wr_en_w':1,'u_pbit_top_u_uart_reg_subsystem_reg_rd_en_w':1,
               'u_pbit_top_u_uart_reg_subsystem_reg_addr_w':16,'u_pbit_top_u_uart_reg_subsystem_reg_wdata_w':32,
               'u_pbit_top_u_uart_reg_subsystem_reg_rdata_w':32,'u_pbit_top_u_uart_reg_subsystem_reg_access_error_w':1}
-    found={}; launch=False; active=False
+    found={}; launch=False; handoff=False; active=False
     with Path(os.environ['ANALYSIS_NETLIST']).open() as f:
         for line in f:
             if re.match(r'\s*module\s+pbit_io_wrapper\b',line): active=True
@@ -77,11 +77,12 @@ def inputs():
             m=re.fullmatch(r'\s*wire\s+(?:\[(\d+):(\d+)\]\s+)?(\w+)\s*;\s*',line)
             if m and m.group(3) in required: found[m.group(3)]=int(m.group(1))-int(m.group(2))+1 if m.group(1) else 1
             if re.search(r'\bDFFRNQX0P5_9TSVT\s+u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_wr_en_ff_q_o_reg_0_\s*\(',line): launch=True
+            if re.search(r'\bDFFQX2_9TSVT\s+u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_\s*\(',line): handoff=True
             if line.strip()=='endmodule': break
-    if found!=required or not launch: raise ValueError('Fast bus netlist interface differs from reviewed 261014 adapter')
+    if found!=required or not launch or not handoff: raise ValueError('Fast bus netlist interface differs from reviewed 261014 adapter')
     manifest=json.loads(Path('inputs.json').read_text())
     manifest.update(transport='REGISTER_BUS_INJECTION',pll_transport='PLL_REGISTER_BUS_INJECTION',
-                    force_scope='UART request-boundary nets held inactive during compute; first-stage notifier profile; PLL supply hookups. No array/register state or clock forced.',
+                    force_scope='UART request nets alias master flop Q and may disturb feedback. No array storage, PLL clock, or reset is forced; existing first-stage notifier profile and PLL supplies retained.',
                     full_uart_end_to_end=False,bus_stimulus_source_delay_ns=0.30,
                     bus_stimulus_clock='UART master write-enable register CK',
                     parallel=os.environ['PARALLEL'],fgp_requested_threads=int(os.environ['VCS_FGP_THREADS']))

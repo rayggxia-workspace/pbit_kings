@@ -1,8 +1,10 @@
 // TEST ONLY: declarations for local elaboration and host-codec tests, not RTL.
 `timescale 1ns/10ps
-module ff_stub(input wire CK); endmodule
+module ff_stub(input wire CK);
+    wire D=0,Q=0;
+endmodule
 module pll_stub(inout wire DVDD,DVSS,DVDD_DRV,DVSS_DRV);
-    wire EN=0,BP=0,CKTST=0;wire [7:0] N=24;wire[1:0] OD=1;
+    wire EN=0,BP=0,CKTST=0,CKOUT1=0;wire [7:0] N=24;wire[1:0] OD=1;
 endmodule
 module pbit_io_wrapper(input wire pad_clk_i,pad_rst_n_i,pad_uart_rx_i,pad_pll_cfg_rx_i,
                        output wire pad_uart_tx_o,pad_pll_cfg_tx_o,inout wire pll_avdd,pll_avss);
@@ -17,4 +19,5 @@ module pbit_io_wrapper(input wire pad_clk_i,pad_rst_n_i,pad_uart_rx_i,pad_pll_cf
     wire u_pbit_top_u_uart_reg_subsystem_reg_access_error_w;
     pll_stub u_pll();
     ff_stub u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_wr_en_ff_q_o_reg_0_(pad_clk_i);
+    ff_stub u_pbit_top_u_uart_reg_subsystem_u_pbit_uart_reg_master_req_addr_ff_q_o_reg_3_(pad_clk_i);
 endmodule

@@ -10,7 +10,9 @@ import traceback
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE/'source'))
 from plan import cases,corner,PLANS,RELEASE
-from audit_modes import audit
+from audit_modes import audit,partial
+from model_probe import run as model_probe
+from diagnose_suspects import summarize
 from coverage_evidence import sha,native,bind
 
 
@@ -51,6 +53,11 @@ def main():
     (root/'stage.txt').write_text('build\n')
     command([sys.executable,'-u','source/build_driver.py'],build,env)
     native(build)
+    try:
+        model=model_probe(root/'model_probe',build,snapshot)
+    except Exception as error:
+        model=dict(status='MODEL_PROBE_EXECUTION_FAILED',error=str(error),timing_signoff=False)
+        save(root/'model_probe_failure.json',model)
     reports=[]
     for case in selected:
         (root/'stage.txt').write_text(case+'\n')
@@ -67,17 +74,18 @@ def main():
         try:
             command(args,dst,env)
             report=audit(dst,case,sdf_corner,build)
-            reports.append(dict(case=case,status=report['status'],failures=report['failures'],
-                timing_events=report['raw_timing_events'],reset_window_events=report['reset_window_events'],
-                outside_reset_events=report['outside_reset_events'],model_warnings=report['model_and_runtime_warnings']))
+            reports.append(report)
         except Exception as error:
             (dst/'diagnostic_failure.txt').write_text(str(error)+'\n'+traceback.format_exc())
-            reports.append(dict(case=case,status='DIAGNOSTIC_EXECUTION_FAILED',failures=[str(error)]))
+            reports.append(partial(dst,case,error))
         save(root/'diagnostic_progress.json',reports)
-    failed=any(r['failures'] for r in reports)
+    diagnosis=summarize(root,reports,model)
+    failed=any(r['failures'] and not r.get('negative_control_reproduced') for r in reports)
+    failed=failed or 'variants' not in model or any(v['status']!='MODEL_PROBE_COMPLETE' for v in model.get('variants',[]))
     save(root/'diagnostic_summary.json',dict(status='FAILURES_NEED_ACTION' if failed else 'DIAGNOSTICS_COMPLETE_REVIEW_REQUIRED',
          cases=reports,diagnostic_complete=True,chip_timing_pass=False,timing_signoff=False,
-         note='Reset-window events are retained, not blanket-waived. Backend review is still required.'))
+         bus_handoff_verdict=diagnosis['bus_handoff_verdict'],
+         note='Legacy negative-control failures are explicitly retained, not chip PASS. Reset/model events require review.'))
     (root/'DIAGNOSTICS_COMPLETE.txt').write_text('PLL modes execution completed; not chip timing PASS.\n')
     (root/'stage.txt').write_text('complete\n')
     if failed: raise RuntimeError('One or more diagnostic cases failed; see diagnostic_summary.json')

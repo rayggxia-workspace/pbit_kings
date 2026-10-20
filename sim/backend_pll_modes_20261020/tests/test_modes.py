@@ -15,6 +15,8 @@ import plan
 import audit_modes as a
 import run
 import build_driver
+import model_probe
+import diagnose_suspects
 from precision import convert
 
 
@@ -62,7 +64,8 @@ class Tests(unittest.TestCase):
         return tool('xsim',['unit_snapshot','-runall']) if execute else ''
 
     def test_plan_selection(self):
-        self.assertEqual(plan.cases('all'),['bypass','switch','errors'])
+        self.assertEqual(plan.cases('all'),['bypass','switch','errors','bus_legacy','bus_safe','pin_only'])
+        self.assertEqual(plan.cases('quick'),list(plan.PROBES))
         for x in ('old_recovery','bypass,bypass',''):
             with self.assertRaises(ValueError):plan.cases(x)
         for x in ('WC','BC'):self.assertEqual(plan.corner(x),x)
@@ -90,27 +93,37 @@ class Tests(unittest.TestCase):
         with self.assertRaises(ValueError):a.timing('Timing violation in ff\nBad format\n',[])
 
     def fixture(self,p,case='bypass'):
-        epochs=[];tx=[];checks=[];trace='ns,signal,value,epoch\n'
+        epochs=[];tx=[];checks=[];metrics=[];trace='ns,signal,value,epoch\n';probe=case in plan.PROBES
         for i,(name,f) in enumerate(plan.PLANS[case],1):
             h=round(500.0/f,2)
             epochs.append(dict(epoch=i,name=name,mhz=f,config=plan.MODES[f],core_baud=f*1000000//500,
-                tiny_problem='two_node_maxcut',snapshot_mask=17,snapshot_expected=1,sweeps=2,actual_majority=1,
-                core_pin_transactions=2,pll_pin_transactions=5,core_half_min_ns=h,core_half_max_ns=h,
+                tiny_problem='none' if probe else 'two_node_maxcut',snapshot_mask=0 if probe else 17,
+                snapshot_expected=0 if probe else 1,sweeps=0 if probe else 2,actual_majority=1,
+                snapshot_words_checked=0 if probe else 100,
+                core_pin_transactions=0 if probe else 2,pll_pin_transactions=5,core_half_min_ns=h,core_half_max_ns=h,
                 test_half_min_ns=53.33,test_half_max_ns=53.33,core_edges=100,test_edges=30,
                 enable_to_release_ns=15010,reset_before_disable_ns=150))
-            for n in ('startup_and_core_configuration_reset','dynamic_baud_pin_uart_read_write','tiny_maxcut_run_and_snapshot','mode_epoch_complete'):
+            for signal,half in [('core',500.0/f),('test',500.0/9.375)]:
+                metrics.append(dict(epoch=i,signal=signal,period_min_ns=round(2*half,2),period_max_ns=round(2*half,2),
+                    high_min_ns=half,high_max_ns=half,low_min_ns=half,low_max_ns=half,periods=20,
+                    bypass_lag_min_ns=.1,bypass_lag_max_ns=.2))
+            required=(('startup_without_bus_override' if case=='pin_only' else 'startup_and_core_configuration_reset',
+                       'bus_probe_complete') if probe else
+                      ('startup_and_core_configuration_reset','dynamic_baud_pin_uart_read_write','tiny_maxcut_run_and_snapshot','mode_epoch_complete'))
+            for n in required:
                 checks.append(dict(name=n,epoch=i))
             cfg=plan.MODES[f];ready=0x7a if f==25 else 0x72
             for req,resp in ((0x01000000|cfg,0),(0x02000000,cfg),(0x01020001,0x00020000),
                              (0x02040000,0x00040000|ready),(0x02060000,0x00060000|cfg)):
                 tx.append(dict(transport='PLL_PIN_UART',epoch=i,request=format(req,'08x'),response=format(resp,'08x'),bit_ns=1000))
-            for wr in (1,0):tx.append(dict(transport='CORE_PIN_UART',epoch=i,mhz=f,write=wr,address=4,data=1 if wr else 0,response=0 if wr else 1,bit_ns=500000.0/f))
+            if not probe:
+                for wr in (1,0):tx.append(dict(transport='CORE_PIN_UART',epoch=i,mhz=f,write=wr,address=4,data=1 if wr else 0,response=0 if wr else 1,bit_ns=500000.0/f))
             trace+='{},core_rst_n,0,{}\n{},core_rst_n,1,{}\n'.format(i*10,i,i*10+4,i)
         result=dict(release=plan.RELEASE,case=case,corner='WC',status='FUNCTIONAL_PASS',epochs=len(epochs),
             power_estimated=False,timing_signoff=False,checks=len(checks),pll_pin_transactions=len(epochs)*5,
-            core_pin_transactions=len(epochs)*2,pll_directed_transactions=0)
+            core_pin_transactions=0 if probe else len(epochs)*2,pll_directed_transactions=0)
         (p/'mode_result.json').write_text(json.dumps(result))
-        for name,data in [('epochs',epochs),('transactions',tx),('checks',checks)]:
+        for name,data in [('epochs',epochs),('transactions',tx),('checks',checks),('clock_metrics',metrics)]:
             (p/(name+'.jsonl')).write_text(''.join(json.dumps(r)+'\n' for r in data))
         (p/'mode_trace.csv').write_text(trace)
         (p/'simulation.log').write_text('[PLL_MODES_FUNCTIONAL] PASS\n[POSTLAYOUT_SDF_RETURNED]\n[SYNC_HEALTH] PASS\n[SYNC_PROFILE] ACTIVE time=0 first_stage_notifiers=2\n')
@@ -121,7 +134,7 @@ class Tests(unittest.TestCase):
         with mock.patch.object(a,'bind',return_value={'MOCK':'not real SDF evidence'}):return a.audit(p,case,'WC',p/'mock_build')
 
     def test_complete_fixture_and_no_signoff(self):
-        for case in ('bypass','switch'):
+        for case in ('bypass','switch')+plan.PROBES:
             with self.directory() as folder:
                 p=Path(folder);self.fixture(p,case);r=self.audit(p,case)
                 self.assertEqual(r['failures'],[]);self.assertFalse(r['timing_signoff'])
@@ -225,12 +238,21 @@ class Tests(unittest.TestCase):
             self.xsim(p,'tb_gate_pipeline_maxcut_lite',[ROOT/'source/tb_gate_pipeline_maxcut_lite.sv'])
             # Deliberately not executed: declaration-only DUT is not a design model.
 
+    def test_isolation_top_elaborates_with_actual_vendor_ports(self):
+        base=Path(os.environ.get('PBIT_WORKSPACE',str(ROOT.parents[3]))).parent
+        model=base/'10月_MPW/PLL_20260916/verilog/PLL_TOP.v'
+        if not model.is_file():self.skipTest('Licensed vendor model not in script package')
+        with self.directory() as folder:
+            p=Path(folder);self.settings(p)
+            self.xsim(p,'tb_vendor_stop',[model,ROOT/'source/tb_vendor_stop.sv'])
+
     def test_clock_guard_positive_and_negative(self):
         for mode,marker in [('ok','GUARD_TEST_PASS'),('pulse','CLOCK_GUARD_PULSE'),
+                            ('duty','GUARD_TEST_PASS'),('frequency','CLOCK_GUARD_PERIOD'),
                             ('reset','CLOCK_GUARD_UNEXPECTED_RESET'),('stop','CLOCK_GUARD_STOPPED')]:
             with self.directory() as folder:
                 p=Path(folder)
-                action={'ok':'','pulse':'#1;clk=0;#1;clk=1;','reset':'rst=0;','stop':'run_clock=0;'}[mode]
+                action={'ok':'','duty':'','frequency':'','pulse':'#1;clk=0;#1;clk=1;','reset':'rst=0;','stop':'run_clock=0;'}[mode]
                 (p/'tb.sv').write_text('''`timescale 1ns/10ps
 module t;
 reg clk=0,rst=1,active=0,run_clock=1;realtime half=5;
@@ -238,10 +260,87 @@ always #5 if(run_clock) clk=~clk;
 pll_clock_guard guard(clk,rst,active,half);
 initial begin #2;active=1;#20;ACTION #200;$display("GUARD_TEST_PASS");$finish;end
 endmodule
-'''.replace('ACTION',action))
+'''.replace('ACTION',action).replace('always #5 if(run_clock) clk=~clk;',
+                    'always begin #5.1;if(run_clock)clk=1; #4.9;if(run_clock)clk=0; end' if mode=='duty' else
+                    ('always #5.1 if(run_clock) clk=~clk;' if mode=='frequency' else 'always #5 if(run_clock) clk=~clk;')))
                 exe=self.compile(p,'t',[ROOT/'source/pll_clock_guard.sv',p/'tb.sv'])
                 out=self.execute(p,exe);self.assertIn(marker,out)
-                if mode!='ok':self.assertNotIn('GUARD_TEST_PASS',out)
+                if mode not in ('ok','duty'):self.assertNotIn('GUARD_TEST_PASS',out)
+
+    def test_period_and_bypass_metrics_fail_closed(self):
+        for mode in ('asymmetric_ok','wrong_period','missing_metrics','wrong_reference'):
+            with self.directory() as folder:
+                p=Path(folder);epochs,_=self.fixture(p)
+                epochs[0].update(core_half_min_ns=19.8,core_half_max_ns=20.2)
+                (p/'epochs.jsonl').write_text(json.dumps(epochs[0])+'\n')
+                ms=a.rows(p/'clock_metrics.jsonl');ms[0].update(high_min_ns=20.2,high_max_ns=20.2,low_min_ns=19.8,low_max_ns=19.8)
+                if mode=='wrong_period':ms[0]['period_max_ns']=40.2
+                if mode=='wrong_reference':ms[0]['bypass_lag_max_ns']=3
+                if mode=='missing_metrics':ms.pop()
+                (p/'clock_metrics.jsonl').write_text(''.join(json.dumps(m)+'\n' for m in ms))
+                self.assertEqual(bool(self.audit(p)['failures']),mode!='asymmetric_ok')
+
+    def test_negative_control_needs_correlated_trace_and_clean_controls(self):
+        reports=[]
+        with self.directory() as folder:
+            root=Path(folder)
+            for case in plan.PROBES:
+                p=root/case;p.mkdir();self.fixture(p,case)
+                if case=='bus_legacy':
+                    with (p/'mode_trace.csv').open('a') as f:
+                        f.write('20,fast_active,1,1\n20.01,addr3_d,0,1\n')
+                    with (p/'simulation.log').open('a') as f:
+                        f.write('Timing violation in ff_req_addr_ff_q_o_reg_3_\n $setuphold(posedge CK:2000,negedge D:2009,limits:(0,12));\n')
+                reports.append(self.audit(p,case))
+            self.assertTrue(reports[0]['negative_control_reproduced'])
+            self.assertTrue(reports[0]['failures'])
+            d=diagnose_suspects.summarize(root,reports,{})
+            self.assertEqual(d['bus_handoff_verdict'],'INJECTION_ARTIFACT_SUPPORTED_BY_AB_CONTROLS')
+            reports[1]['failures']=['Unexpected hold']
+            self.assertIn('UNRESOLVED',diagnose_suspects.summarize(root,reports,{})['bus_handoff_verdict'])
+
+    def test_partial_audit_keeps_actual_fatal(self):
+        with self.directory() as folder:
+            p=Path(folder)
+            (p/'simulation.log').write_text('Fatal: clock guard\nCLOCK_GUARD_PULSE actual=20.2\n')
+            r=a.partial(p,'bypass',ValueError('No mode_result.json'))
+            self.assertFalse(r['functional_evidence_complete'])
+            self.assertIn('CLOCK_GUARD_PULSE',' '.join(r['fatal_messages']))
+
+    def test_model_probe_identity_and_raw_evidence(self):
+        with self.directory() as folder:
+            p=Path(folder);build=p/'build';(build/'models').mkdir(parents=True)
+            original=p/'vendor.v';original.write_text('`timescale 1ns/1ps\n// model fixture\n')
+            (build/'models/pll.v').write_text('`timescale 1ns/10ps\n// model fixture\n')
+            before=original.read_bytes()
+            def call(command,cwd,stdout,stderr):
+                if command==['./simv']:
+                    stdout.write('[VENDOR_STOP_PHASE]\n'*5+'[VENDOR_STOP_COMPLETE]\nWarning-[STASKW_SDILTA64B] inf\n')
+                    (Path(cwd)/'model_trace.csv').write_text('ns,signal,value,phase\n1,en,0,0\n2,ckout,1,0\n2.01,ckout,0,0\n')
+                return 0
+            with mock.patch.dict(os.environ,{'PLL_MODEL':str(original)}),mock.patch.object(model_probe.subprocess,'call',side_effect=call):
+                r=model_probe.run(p/'out',build,ROOT)
+            self.assertEqual(original.read_bytes(),before)
+            self.assertTrue(r['isolated_vendor_short_pulse_reproduced'])
+            self.assertTrue(all(v['status']=='MODEL_PROBE_COMPLETE' for v in r['variants']))
+
+    def test_handoff_slot_actual_environment(self):
+        with self.directory() as folder:
+            p=Path(folder);self.settings(p)
+            (p/'tb.sv').write_text('''`timescale 1ns/10ps
+module t;
+gate_pipeline_env env();realtime last_fall;
+always @(negedge env.handoff_clk)last_fall=$realtime;
+initial begin
+ #21;env.safe_bus_handoff=1;env.begin_fast_bus;
+ if($realtime-last_fall<0.29 || $realtime-last_fall>0.31)$fatal(1,"Unsafe acquisition");
+ env.end_fast_bus;
+ if($realtime-last_fall<0.29 || $realtime-last_fall>0.31)$fatal(1,"Unsafe release");
+ $display("HANDOFF_SLOT_PASS");$finish;
+end
+endmodule
+''')
+            out=self.xsim(p,'t',[p/'tb.sv'],True);self.assertIn('HANDOFF_SLOT_PASS',out)
 
     def test_real_host_codec_at_three_bauds(self):
         with self.directory() as folder:

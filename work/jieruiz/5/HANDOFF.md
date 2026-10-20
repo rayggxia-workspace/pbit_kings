@@ -1,5 +1,36 @@
 # PLL Mode Validation Handoff
 
+## Latest: v2 Suspect Diagnostics, 2026-10-20
+
+v1 job38227554 downloaded and independently reviewed; exact final v1 source
+manifest matched. See sim/backend_pll_modes_20261020/REVIEW_38227554_ZH.txt.
+Bypass failure was an overly strict project-written guard; period40ns remained
+correct while pulses20.20/19.80ns were rejected. One extra30ps req_addr[3] hold
+is a Q-feedback/injection suspect, not a proven silicon failure or an allowed
+waiver. Original netlist CK evidence: address3=CTS_8; write-launch=CTS_5.
+82 MAC/RNG reset-window events and vendor inf/runt behavior remain explicit.
+
+User requested diagnostic scripts for all suspects. v2 in the SAME package
+directory/branch adds full-period/duty/reference checks, three bus controls,
+isolated original-vendor1ps/matched10ps stop probes and full snapshot X checks.
+No DUT/SDF/vendor-function patch, no global/narrow new waiver, no PT rerun.
+21 local unittest checks PASS (39.19s). Full-top elaboration uses declaration-only
+DUT, actual UART hosts execute with synthetic peers; actual licensed PLL ports
+elaborated only. Remote v2 VCS is NOT yet run. Version20261020_pll_modes_v2.
+
+Next: upload backend_pll_modes_20261020_v2_scripts.zip to existing server root,
+unzip -o, verify VERSION/manifest and bash submit.sh all. quick selects only
+three bus controls plus model probes. Do not reuse38227554/v1 build. Download
+backend_pll_modes_JOBID.tar.gz; first inspect suspect_diagnosis.json, then each
+raw case audit/clock_metrics/mode_trace and model_probe summaries. Legacy control
+may intentionally reproduce the original hold; raw failure remains recorded.
+Only clean safe/no-injection controls plus correlated legacy reproduction support
+an injection-artifact diagnosis. No causality conclusion before these runs.
+Full output X checks do not prove all internal unreset pipeline flops are known.
+
+Current local delivery and publication facts are in DELIVERY.json; below is
+preserved v1 handoff history, not the current server-run status.
+
 Date: 2026-10-20 Asia/Shanghai. Owner: jieruiz.
 Repository: rayggxia-workspace/pbit_kings. Issue #5.
 Branch: task/5-pll-mode-validation. Base: 05571587a8895d644f73c767bda02fa146ecedca,
