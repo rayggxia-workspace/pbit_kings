@@ -16,7 +16,8 @@ stop probes; full3200-bit snapshot X check after each complete mode. No DUT/SDF
 patch, no new waiver, no power rerun. 21 local tests PASS including actual-host,
 handoff-slot and vendor-port elaboration; no new real-netlist VCS execution.
 New ZIP/provenance recorded in DELIVERY.json after final checks. Publication
-state and remaining next steps are in work/jieruiz/5/HANDOFF.md. Remote v2 pending.
+state and remaining next steps are in work/jieruiz/5/HANDOFF.md. Remote v2 pending:
+ordinary Git push failed with connection reset; local validated ZIP is ready.
 Do not reuse v1 build; source identity intentionally changes. Existing raw result
 archives kept read-only; no redundant full checkout or large extraction created.
 

@@ -2,6 +2,15 @@
 
 ## Latest: v2 Suspect Diagnostics, 2026-10-20
 
+Validated v2 source commit7cd8c8b6b4309012cb285c6d8f42c5e61b3c97db;
+package72799 bytes/33 files, SHA256
+452e28be5de87cdcc926967ea5ffec1de66f448a9eaeee3868a6e5877251df15.
+All33 ZIP source bytes match Git blobs. Bash syntax/schema checks PASS.
+Ordinary Git push failed again with connection reset. Remote draft PR6 still
+has a875049 until connectivity returns; do not claim v2 source is remotely pushed.
+Local ZIP is authoritative and can be uploaded to HPC independently. Issue/PR
+receipts are synchronized via API without substituting another member's identity.
+
 v1 job38227554 downloaded and independently reviewed; exact final v1 source
 manifest matched. See sim/backend_pll_modes_20261020/REVIEW_38227554_ZH.txt.
 Bypass failure was an overly strict project-written guard; period40ns remained
