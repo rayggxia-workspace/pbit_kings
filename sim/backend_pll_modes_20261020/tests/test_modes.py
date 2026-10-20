@@ -215,6 +215,8 @@ class Tests(unittest.TestCase):
                     self.assertIn('"'+mtm+'"',(p/'mode_sdf.svh').read_text())
                     self.assertIn('"'+selected+'"',(p/'settings.svh').read_text())
                     self.assertEqual(json.loads((p/'inputs.json').read_text())['corner'],selected)
+                    self.assertEqual(json.loads((p/'inputs.json').read_text())['settings_baseline_mhz'],300)
+                    self.assertNotIn('core_mhz',json.loads((p/'inputs.json').read_text()))
                 finally:os.chdir(str(old))
 
     def test_full_top_syntax_with_actual_environment(self):

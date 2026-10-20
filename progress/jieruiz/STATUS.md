@@ -6,7 +6,8 @@ Owner: jieruiz. Issue: https://github.com/rayggxia-workspace/pbit_kings/issues/5
 Branch: task/5-pll-mode-validation; base task/3-reset-recovery-diagnostic,
 05571587a8895d644f73c767bda02fa146ecedca (PR #4 dependency, not merged).
 Sparse checkout: tmp/pbit-pll-issue5-20261020; no new full clone/helper checkout.
-Stage: local script implementation/verification complete; PR delivery pending.
+Stage: scripts pushed for review; new real-netlist VCS mode runs pending.
+PR: https://github.com/rayggxia-workspace/pbit_kings/pull/6 (draft, not merged).
 Scope: sim/backend_pll_modes_20261020 and task docs; no DUT/PDK/vendor behavior edits.
 Validation: 15 unittest PASS, including XSim actual-host three-baud/back-to-back
 codec tests, full new top declaration-stub elaboration, Icarus clock guard negative
@@ -18,7 +19,8 @@ Prior recovery job38219776 is downloaded and targeted functional recovery passed
 PLL model inf warnings/reset-only events remain review items. Do not rerun that
 job or claim it is unexecuted based on the preserved older status below.
 Registry/board: existing public-registration policy pending; no configured target
-board, synchronization remains pending until a real board is designated.
+board; fresh Issue #5 query found 0 visible projectItems. Synchronization pending
+until a real board is designated. Issue status: in_review, not done.
 Handoff: work/jieruiz/5/HANDOFF.md. Reviewer pending; Issue stays open for results.
 
 ## 2026-10-20 Recovery Diagnostic

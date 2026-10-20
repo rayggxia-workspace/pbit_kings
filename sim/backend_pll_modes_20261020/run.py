@@ -41,7 +41,7 @@ def main():
     manifest=verify(snapshot); selected=cases(os.environ.get('MODE_CASES','all')); sdf_corner=corner(os.environ['CORNER'])
     save(root/'source_manifest.json',manifest)
     save(root/'run_config.json',dict(release=RELEASE,cases=selected,mode_plans={c:PLANS[c] for c in selected},
-        initial_core_mhz=300,runtime_core_mhz=[300,150,25],precision='10ps',sdf_corner=sdf_corner,parallel='serial',
+        settings_baseline_mhz=300,supported_mode_mhz=[300,150,25],precision='10ps',sdf_corner=sdf_corner,parallel='serial',
         full_uart_end_to_end=False,power_estimated=False,timing_signoff=False,
         old_passed_tests_rerun=False))
     build=root/'build'; build.mkdir()

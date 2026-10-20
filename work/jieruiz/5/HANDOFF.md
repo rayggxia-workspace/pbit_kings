@@ -3,7 +3,9 @@
 Date: 2026-10-20 Asia/Shanghai. Owner: jieruiz.
 Repository: rayggxia-workspace/pbit_kings. Issue #5.
 Branch: task/5-pll-mode-validation. Base: 05571587a8895d644f73c767bda02fa146ecedca,
-dependent recovery PR #4 (not merged). PR delivery pending; do not close task.
+dependent recovery PR #4 (not merged).
+Draft PR #6: https://github.com/rayggxia-workspace/pbit_kings/pull/6, not merged.
+Issue status in_review; server mode evidence pending, do not close task.
 Sparse worktree: tmp/pbit-pll-issue5-20261020. Reuse it; no full clone needed.
 
 ## Goal and Scope
@@ -75,3 +77,5 @@ provenance. Preserve existing registered/pending import records. Projects target
 board is not configured; query/sync still needs explicit target and permissions,
 do not invent board IDs or create a workaround board. Reviewer to be designated.
 Read current Issue/PR and this handoff on resume, not stale older STATUS alone.
+Fresh 2026-10-20 GraphQL readback: Issue #5 has 0 visible projectItems; target
+board remains unspecified, so this is not evidence of synchronized board state.

@@ -16,10 +16,10 @@ def main():
     flow_fast.inputs()
     p=Path('inputs.json');data=json.loads(p.read_text())
     for k in ('seed_policy','configured_cells','configured_nodes','free_nodes','configured_edges',
-              'sweeps','majority','scale_side','core_voltage_v','temperature_c'):
+              'sweeps','majority','scale_side','core_voltage_v','temperature_c','core_mhz'):
         data.pop(k,None)
     data.update(release=RELEASE,problem='PLL_modes_and_tiny_maxcut',corner=selected,
-        actual_majority=1,sweeps_per_completed_run=2,configured_nodes_per_run=2,
+        actual_majority=1,sweeps_per_completed_run=2,configured_nodes_per_run=2,settings_baseline_mhz=300,
         seed='0x13579bdf lane 0 unit (0,0)',runtime_mode_mhz=[300,150,25],
         runtime_core_baud={str(f):f*1000000//500 for f in MODES},pll_uart_baud=1000000,
         mode_plans=PLANS,full_uart_end_to_end=False,transport='MIXED_EXPLICITLY_LOGGED',
