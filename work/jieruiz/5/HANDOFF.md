@@ -7,6 +7,8 @@ dependent recovery PR #4 (not merged).
 Draft PR #6: https://github.com/rayggxia-workspace/pbit_kings/pull/6, not merged.
 Issue status in_review; server mode evidence pending, do not close task.
 Sparse worktree: tmp/pbit-pll-issue5-20261020. Reuse it; no full clone needed.
+Validated script commit: be9e1088e28e811a0f11f6d4d85556949a73b2cd.
+Final ZIP index/SHA-256 and local checks: DELIVERY.json (61,141 bytes, 29 files).
 
 ## Goal and Scope
 

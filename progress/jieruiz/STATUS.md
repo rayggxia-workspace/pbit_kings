@@ -8,6 +8,8 @@ Branch: task/5-pll-mode-validation; base task/3-reset-recovery-diagnostic,
 Sparse checkout: tmp/pbit-pll-issue5-20261020; no new full clone/helper checkout.
 Stage: scripts pushed for review; new real-netlist VCS mode runs pending.
 PR: https://github.com/rayggxia-workspace/pbit_kings/pull/6 (draft, not merged).
+Validated script commit: be9e1088e28e811a0f11f6d4d85556949a73b2cd;
+final ZIP/provenance in work/jieruiz/5/DELIVERY.json.
 Scope: sim/backend_pll_modes_20261020 and task docs; no DUT/PDK/vendor behavior edits.
 Validation: 15 unittest PASS, including XSim actual-host three-baud/back-to-back
 codec tests, full new top declaration-stub elaboration, Icarus clock guard negative
