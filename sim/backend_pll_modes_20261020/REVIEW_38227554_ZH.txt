@@ -1,0 +1,31 @@
+任务38227554审阅与v2诊断目标
+日期：2026-10-20；Issue5；负责人jieruiz。
+
+原件：Documents/10月_MPW/APR_results/backend_pll_modes_38227554.tar.gz
+SHA256: ed2cc377633b4b9a4b60afc03cf5051d852307c3d8d40d941b293289c9b84ae0
+原包只读，没有全量解压。29项源manifest与最终v1 ZIP完全相符。
+build中的两个主机文件仅按原流程把1ps精度转为10ps；不是旧版脚本混用。
+网表SHA: fa0f086141ef60616671ca0a061d487bef8a6997620db5d3313d24ba461fde98
+PLL模型SHA: e7981c7a33fdb60c6cbdd92e91416eafcdb91519cea0d8a89515c4a57c288793
+
+实际证据：
+- native SDF Pathdelays 10,574,277 / Tchecks 2,391,706，均100%。
+- switch在300和150MHz均通过真实PLL UART/核心UART、小问题运行和snapshot。
+- bypass在25MHz时被项目自编guard中止：20.20/19.80ns交替，完整周期40ns。
+  v1 guard对称脉宽±40ps的要求过严；没有完整25MHz计算通过证据。
+- switch在进入25MHz时同样中止，后续返回300/同频APPLY没有执行。
+- errors完成18项功能检查，8笔PLL pin UART、6笔core pin UART、99笔定向PLL接口。
+  85条原始timing：82条复位窗口事件、2条原有同步首级profile事件、1条额外hold。
+  82条包括73 MAC和9 RNG事件，约在1601064.97..1601065.21ns。
+- 额外hold出现在UART请求地址reg_3：CK 409763.92ns，D 409764.01ns；
+  保持90ps，小于120ps要求，差30ps。switch也出现同一事件。
+- 检查原始网表确认reg_3.Q是reg_addr_w[3]，通过组合逻辑反馈D；其CK=CTS_8。
+  原快速接口使用请求写使能寄存器CK=CTS_5；不能假定这两个支路与根时钟同相。
+  force边界有明确反馈扰动机制，但尚需A/B运行证明事件确由它引入。
+- PLL模型163/176行inf警告仍在；errors的CKTST有10ps短脉冲，位于核心复位窗口。
+  不能从行为模型问题推出真实PLL有同样脉冲，也不能替代实物停启规范。
+
+v2不修改芯片RTL、SDF或厂商功能行为，不增加时序豁免，不重新跑功耗。
+新增完整周期/分离高低脉宽/旁路参考沿检查、总线三对照、双精度独立PLL停钟探针、
+完整3200位输出X检查。新的VCS结果尚待运行，原v1结果不能写成v2已通过。
+后端STA、模拟锁定/抖动、所有内部寄存器刷新等仍不是本诊断包的验收结论。

@@ -1,0 +1,43 @@
+Release: 20261021_pll_modes_v3
+Date: 2026-10-21 Asia/Shanghai
+
+Actual local checks:
+- 26 Python unittest methods PASS (Python 3.8.1, standard library; 49.86s).
+- Continuation orchestration fixture verifies one build plus switch only;
+  passed historical cases and model probes are not re-executed.
+- Actual frozen job38230453 archive re-audited with57 input hashes, no EDA call:
+  bus legacy reproduction plus clean safe/no-injection controls correctly identified;
+  original bytes preserved, wrong archive and overwrite requests rejected.
+- Actual reference guard executed through target-mode changes and both directions;
+  an active bypass mismatch is still rejected even when the target is PLL mode.
+- Python source parsed against Python 3.6 grammar: PASS.
+- Full new SV top with the actual host environment elaborated in XSim 2018.3.
+  The chip was replaced by a declaration-only stub. This is NOT a gate-level run.
+- Actual core UART host executed against a synthetic peer at 600/300/50 kbaud,
+  including back-to-back byte framing: PASS.
+- Actual four-byte PLL UART host executed against a synthetic peer: PASS.
+- Clock guard executed in local Icarus: valid clocks PASS; short pulse,
+  unexpected reset and stopped-clock cases correctly rejected.
+- Audit fixtures: complete modes/transactions accepted; wrong baud, missing
+  mode/transaction, wrong reply/clock, bad BUSY rejection and active timing/pulse
+  evidence rejected. Reset-only events/warnings retained, not converted to signoff.
+- WC/BC literal SDF setup and separate metadata generation unit checks: PASS.
+- Two Bash syntax checks: PASS.
+
+Host-only changes: dynamic core bit period; explicitly serialized host calls;
+return at stop-bit sample so the next back-to-back byte cannot be missed.
+Request timeouts, start/stop checks and reply checks remain active.
+
+The old local Icarus cannot elaborate the concurrent production UART host tasks;
+XSim was used for those tests instead. Earlier XSim host tests exposed simulator
+automatic-task limitations and a synthetic-peer byte-boundary race; final
+serialized host/back-to-back codec tests pass. No failing run is called PASS.
+
+The actual vendor PLL ports and isolation TB are also elaborated locally without
+executing a vendor analog/silicon model. New clock tests accept asymmetric duty
+at the right period, reject wrong periods/runt pulses/stopped clocks, and audit
+negative controls without hiding their raw timing failure.
+
+No real postlayout netlist/SDF simulation, new DC/PT power run,
+analog lock/jitter verification or hardware signoff was performed locally.
+WC/BC support still requires the user to submit the corresponding VCS jobs.
