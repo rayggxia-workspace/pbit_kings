@@ -1,5 +1,40 @@
 # PLL Mode Validation Handoff
 
+## Latest: Actual v3 Switch Completion, 2026-10-21
+
+User downloaded backend_pll_modes_38263376.tar.gz,128207 bytes,SHA256
+7b7c8143b935be976befb8a07486b0b2e77bf845925eb2c653c6051402b5afba.
+All36 original v3 ZIP manifest entries match; build copies also verified including
+the three declared10ps precision conversions. All five epochs complete with20
+checks,25 PLL pin/10 core pin transactions,500 snapshot words known, two-node
+2-sweep majority1 results. Bulk array setup remains accelerated, not entirely
+pin UART. Prior5 cases/model probes reused, not re-simulated. VCS exit0, wall
+1105.53s; task final failure was audit WIDTH parser treating limit60 as timestamp.
+
+Local parser fix splits limit(s) from event stamps, validates scalar WIDTH limit
+and retains all events. Read-only source/reaudit_switch_v3.py pins original result
+and ZIP SHA, checks static historical coverage provenance without absent binary
+claims, supports explicit historical v3 release, refuses overwrite. Only checked
+small metadata/logs extracted into auto-cleaned workspace temporary directory.
+Result:FUNCTIONAL_PASS_REVIEW_REQUIRED,complete functional evidence,failures=[],
+594 raw=590 WIDTH reset-window+3 RX first-stage setuphold+1 reset first-stage
+recrem.0 extra outside-reset events.590 distinct sinks,550..590ps,10..70ps short,
+all8528343.09..8528343.74ns during epoch4 reset8528103.27..8543388.26ns.
+At8528342ns BP1->0 while reference high truncates root high620ps; this is not
+only the earlier vendor inf/one-tick stop artifact.8 inf warnings/7 other10ps
+short pulses remain. All short pulses reset-only and later functional recovery
+passes; do not waive WIDTH automatically or declare silicon safe/timing signoff.
+
+Next: vendor BP glitch-free/safe switching specification, backend reset-window
+WIDTH requirements. No full VCS rerun needed to repair this audit; no new waiver,
+DUT/SDF/vendor edit or power run. Original v3 ZIP untouched/not rebuilt. Latest
+small local output/report:result_pipeline/PLL_38263376_REVIEW_20261021.
+Below pending-v3-run statements are historical and superseded by this section.
+Validation:29 unittest PASS44.571s, including actual frozen38263376 archive,
+old v2 re-audit, actual-host XSim/guard cases;git diff --check PASS. No remote
+simulation launched by these tests. Hash/location receipt:REVIEW_38263376.json.
+Publication final receipt to be recorded after completion this turn.
+
 ## Latest: v3 Switch-Only Continuation, 2026-10-21
 
 Validated source0bccec8fe54c0b9a97d12f4f9c05fcbf9574ba50. Final ZIP

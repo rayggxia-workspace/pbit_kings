@@ -34,11 +34,19 @@ def timing(text,intervals):
         call=next((l for l in lines[1:8] if re.search(r'\$\w+\(',l)),None)
         if call is None:raise ValueError('Unparseable timing event '+scope)
         check=re.search(r'\$(\w+)\(',call).group(1)
-        times=[int(v)*.01 for v in re.findall(r':\s*(\d+)',call)]
+        # A scalar "limit: 60" is a constraint, not a third event timestamp.
+        parts=re.split(r'\blimits?\s*:',call,maxsplit=1)
+        times=[int(v)*.01 for v in re.findall(r':\s*(\d+)',parts[0])]
         if len(times) not in (1,2):raise ValueError('Unparseable timing stamps '+call)
+        if check=='width' and len(times)!=2:raise ValueError('Incomplete pulse timing '+call)
         inside=any(a<=min(times) and max(times)<b for a,b in intervals)
-        result.append(dict(instance=scope,check=check,pin_event_ns=times,
-            reset_window=inside,existing_first_stage_profile=ALLOWED.get(scope)==check,raw=call.strip()))
+        event=dict(instance=scope,check=check,pin_event_ns=times,
+            reset_window=inside,existing_first_stage_profile=ALLOWED.get(scope)==check,raw=call.strip())
+        if check=='width':
+            limit=re.search(r'\blimit\s*:\s*(\d+)\s*\)\s*;',call)
+            if limit is None:raise ValueError('Unparseable pulse limit '+call)
+            event.update(width_ns=round(abs(times[1]-times[0]),6),limit_ns=round(int(limit.group(1))*.01,6))
+        result.append(event)
     return result
 
 
@@ -77,14 +85,16 @@ def partial(root,case,error):
     return report
 
 
-def audit(root,case,selected_corner,build,historical=False):
+def audit(root,case,selected_corner,build,historical=False,historical_release=None):
+    if historical_release is not None and not historical:
+        raise ValueError('Historical release override requires historical provenance checks')
     root=Path(root);fail=[]
     result=json.loads((root/'mode_result.json').read_text())
     epochs=rows(root/'epochs.jsonl');tx=rows(root/'transactions.jsonl');checks=rows(root/'checks.jsonl')
     trace=(root/'mode_trace.csv').read_text();text=(root/'simulation.log').read_text(errors='replace')
     expected=PLANS[case]
     probe=case in PROBES
-    expected_release='20261020_pll_modes_v2' if historical else RELEASE
+    expected_release=(historical_release or '20261020_pll_modes_v2') if historical else RELEASE
     notes=[]
     for key,value in dict(release=expected_release,case=case,corner=selected_corner,status='FUNCTIONAL_PASS',
                           epochs=len(expected),power_estimated=False,timing_signoff=False).items():

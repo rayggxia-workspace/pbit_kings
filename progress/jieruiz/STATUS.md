@@ -1,5 +1,23 @@
 # jieruiz progress
 
+## 2026-10-21 Completed v3 Switch Result 38263376
+
+Actual WC/10ps v3 continuation completed all five epochs:300->150->25 bypass->
+300->same300 APPLY. All36 frozen package identities and recorded build/SDF
+provenance checked.20 functional checks,25 PLL pin UART,10 core pin UART,
+5x100-word known snapshots/two-node2-sweep results PASS. Bulk array config still
+uses accelerated bus; not full-UART-only or full3200-node workload/signoff.
+VCS exit0; final job failure was our WIDTH scalar-limit parser. Local fix retains
+all594 raw events:590 WIDTH in definite reset,3 RX setuphold+1 reset recrem in
+existing exact profiles;0 additional outside-reset events. No new waiver.
+BP deassertion while reference high truncated root high to620ps, local sinks
+550..590ps (10..70ps short); distinct from prior inf/one-tick model stop defect.
+Function recovered, but vendor safe BP-switch specification and backend WIDTH
+review remain required. No new EDA, no DUT/IP edits, no rebuilt v3 ZIP. Original
+archive preserved. Read-only re-audit and Chinese report in
+result_pipeline/PLL_38263376_REVIEW_20261021 outside this checkout; raw files not
+published. Tests/publication receipt recorded in work/jieruiz/5/HANDOFF.md.
+
 ## 2026-10-21 v2 Results and v3 Switch Continuation
 
 Issue5 / draftPR6, same branch/checkout. Actual38230453 v2 identities all33 match;

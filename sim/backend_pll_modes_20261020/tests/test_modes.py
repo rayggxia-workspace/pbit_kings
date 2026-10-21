@@ -19,6 +19,7 @@ import build_driver
 import model_probe
 import diagnose_suspects
 import reaudit_previous
+import reaudit_switch_v3
 from precision import convert
 
 
@@ -91,8 +92,56 @@ class Tests(unittest.TestCase):
         self.assertFalse(a.timing(event(150,99),[(1,2)])[0]['reset_window'])
         scope=next(iter(a.ALLOWED))
         self.assertTrue(a.timing(event(150,145,scope),[])[0]['existing_first_stage_profile'])
-        self.assertFalse(a.timing(event(150,145,scope,'width'),[])[0]['existing_first_stage_profile'])
+        self.assertFalse(a.timing(event(150,145,scope,'recrem'),[])[0]['existing_first_stage_profile'])
         with self.assertRaises(ValueError):a.timing('Timing violation in ff\nBad format\n',[])
+
+    def test_width_scalar_limit_is_not_an_event_timestamp(self):
+        raw='Timing violation in array.spin_ff\n $width( posedge CK:852834310,  : 852834367, limit: 60 );\n'
+        events=a.timing(raw,[(8528103.27,8543388.26)])
+        self.assertEqual(len(events),1)
+        e=events[0]
+        self.assertEqual(e['check'],'width');self.assertTrue(e['reset_window'])
+        self.assertEqual([round(v,2) for v in e['pin_event_ns']],[8528343.10,8528343.67])
+        self.assertEqual(e['width_ns'],.57);self.assertEqual(e['limit_ns'],.6)
+        self.assertFalse(e['existing_first_stage_profile'])
+        self.assertEqual(a.timing(raw,[])[0]['reset_window'],False)
+        for bad in (raw.replace('367, limit','367, other: 12, limit'),
+                    raw.replace('limit: 60','limit: bad'),raw.replace('  : 852834367,','')):
+            with self.assertRaises(ValueError):a.timing(bad,[])
+        zero=raw.replace('limit: 60','limit: 0')
+        self.assertEqual(a.timing(zero,[])[0]['limit_ns'],0)
+
+    def test_width_retained_in_audit_and_release_override_is_historical_only(self):
+        with self.directory() as folder:
+            p=Path(folder);self.fixture(p)
+            with (p/'simulation.log').open('a') as f:
+                f.write('Timing violation in array.ff\n $width(posedge CK:1200, :1257, limit:60);\n')
+            r=self.audit(p)
+            self.assertTrue(r['functional_evidence_complete']);self.assertEqual(r['raw_timing_events'],1)
+            self.assertEqual(r['reset_window_events'],1)
+            self.assertEqual(r['status'],'FUNCTIONAL_PASS_REVIEW_REQUIRED')
+            with self.assertRaises(ValueError):
+                a.audit(p,'bypass','WC',p,historical_release=plan.RELEASE)
+            with mock.patch.object(a,'historical_binding',return_value={'MOCK':'not real SDF evidence'}):
+                r=a.audit(p,'bypass','WC',p,historical=True,historical_release=plan.RELEASE)
+                self.assertEqual(r['failures'],[]);self.assertTrue(r['historical_reaudit'])
+
+    def test_actual_completed_v3_switch_archive(self):
+        base=Path(os.environ.get('PBIT_WORKSPACE',str(ROOT.parents[3])))
+        archive=base.parent/'10月_MPW/APR_results/backend_pll_modes_38263376.tar.gz'
+        package=base/'backend_pll_modes_20261021_v3_scripts.zip'
+        if not archive.is_file() or not package.is_file():self.skipTest('Original local result/script archives absent')
+        with self.directory() as folder:
+            report,stats=reaudit_switch_v3.review(archive,package,Path(folder)/'review')
+            self.assertEqual(stats['original_package_files_verified'],36)
+            self.assertTrue(report['functional_evidence_complete']);self.assertEqual(report['failures'],[])
+            self.assertEqual(report['status'],'FUNCTIONAL_PASS_REVIEW_REQUIRED')
+            self.assertEqual(report['raw_timing_events'],594)
+            self.assertEqual(report['reset_window_events'],590)
+            self.assertEqual(report['existing_profile_events'],4)
+            self.assertEqual(report['outside_reset_events'],0)
+            self.assertEqual(stats['raw_check_counts'],{'width':590,'setuphold':3,'recrem':1})
+            with self.assertRaises(ValueError):reaudit_switch_v3.review(archive,package,Path(folder)/'review')
 
     def fixture(self,p,case='bypass'):
         epochs=[];tx=[];checks=[];metrics=[];trace='ns,signal,value,epoch\n';probe=case in plan.PROBES
