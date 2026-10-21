@@ -33,7 +33,12 @@ Below pending-v3-run statements are historical and superseded by this section.
 Validation:29 unittest PASS44.571s, including actual frozen38263376 archive,
 old v2 re-audit, actual-host XSim/guard cases;git diff --check PASS. No remote
 simulation launched by these tests. Hash/location receipt:REVIEW_38263376.json.
-Publication final receipt to be recorded after completion this turn.
+Final publication: authenticatedjieruiz/push permission verified; ordinary Git
+push succeeded, remote source head8eb39fbbfd7f1140e2b71bc6008108682a8f55e5 read
+back via GitHub API. Existing comment6288589341 and draftPR6 body updated/read
+back with completed-run facts and retained WIDTH caveat. PRopen/draft/unmerged,
+Issueopen/in_review. No target board configured; board sync remains pending.
+Earlier connection-reset/source-pending statements below are historical only.
 
 ## Latest: v3 Switch-Only Continuation, 2026-10-21
 

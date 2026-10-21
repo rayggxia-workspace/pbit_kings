@@ -41,10 +41,16 @@
     "REPORT_ZH.txt": "0867f4f70ca85c80b576227f12cedefc62ccd876161ed76a8c50a3acebfc51fe"
   },
   "local_validation": "29 unittest PASS in 44.571s; git diff --check PASS; project schema PASS",
+  "source_fix_commit": "8eb39fbbfd7f1140e2b71bc6008108682a8f55e5",
+  "source_fix_pushed": true,
+  "remote_source_head_read_back": true,
+  "issue_receipt_comment": "https://github.com/rayggxia-workspace/pbit_kings/issues/5#issuecomment-6288589341",
+  "issue_receipt_and_pr_body_updated": true,
+  "pr_merged": false,
   "remaining": [
     "Vendor BP glitch-free and safe BP/EN switching specification",
     "Backend review of clock WIDTH requirements under reset",
-    "Pending source push if Git transport remains unavailable; draft PR is not merged",
+    "Source fix pushed; draft PR is not merged and backend/vendor review remains pending",
     "Project board not configured; synchronization pending"
   ]
 }

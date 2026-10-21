@@ -17,6 +17,10 @@ review remain required. No new EDA, no DUT/IP edits, no rebuilt v3 ZIP. Original
 archive preserved. Read-only re-audit and Chinese report in
 result_pipeline/PLL_38263376_REVIEW_20261021 outside this checkout; raw files not
 published. Tests/publication receipt recorded in work/jieruiz/5/HANDOFF.md.
+Git transport recovered this turn: source/re-audit fix8eb39fb successfully pushed
+to the existing task branch as verifiedjieruiz. DraftPR6 remains open/unmerged.
+Existing Issue5 receipt6288589341 and PR6 body updated/read back via API; Issue
+remainsin_review. Board target unconfigured/sync pending; no merge/signoff claim.
 
 ## 2026-10-21 v2 Results and v3 Switch Continuation
 
