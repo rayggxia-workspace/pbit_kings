@@ -2,6 +2,11 @@
 
 ## Latest: v3 Switch-Only Continuation, 2026-10-21
 
+Validated source0bccec8fe54c0b9a97d12f4f9c05fcbf9574ba50. Final ZIP
+backend_pll_modes_20261021_v3_scripts.zip:83,682 bytes,36 files, SHA256
+747eaebc6a763b42ba006a0234f362dadf2ac722c07027088d99845f629b03df.
+All36 package bytes match Git source blobs; syntax/schema checks PASS.
+
 Reviewed actual v2 job38230453, archive SHA256
 a04394f619986ccb1a79a3097a7d53eec5aa9520e4fe6d2f17ff1299ae30bb9c.
 All33 v2 source identities matched. Cold25 bypass completed pin UART/compute/
