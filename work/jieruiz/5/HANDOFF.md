@@ -6,6 +6,13 @@ Validated source0bccec8fe54c0b9a97d12f4f9c05fcbf9574ba50. Final ZIP
 backend_pll_modes_20261021_v3_scripts.zip:83,682 bytes,36 files, SHA256
 747eaebc6a763b42ba006a0234f362dadf2ac722c07027088d99845f629b03df.
 All36 package bytes match Git source blobs; syntax/schema checks PASS.
+Final publication readback2026-10-21: authenticatedjieruiz/push permission verified;
+ordinary Git push failed with connection reset. Remote PR6 head remainsa875049,
+not v3. Issue comment6288589341 and draft PR6 body updated successfully via API,
+explicitly distinguishing actual v2 evidence/local v3 ZIP/pending source push.
+Issue remainsopen/status:in_review, PRdraft/unmerged. ProjectItems=0 and no target
+board configured; sync pending. Next ordinary push this same branch when network
+recovers; no source reimplementation or second PR needed.
 
 Reviewed actual v2 job38230453, archive SHA256
 a04394f619986ccb1a79a3097a7d53eec5aa9520e4fe6d2f17ff1299ae30bb9c.

@@ -5,10 +5,10 @@
   "issue": 5,
   "pull_request": "https://github.com/rayggxia-workspace/pbit_kings/pull/6",
   "source_commit": "0bccec8fe54c0b9a97d12f4f9c05fcbf9574ba50",
-  "github_final_sync": "pending: v3 is committed locally; ordinary push and refreshed receipt readback still required. Previous v2 pushes failed with connection reset",
+  "github_final_sync": "pending source push: v3 ordinary push failed with connection reset on 2026-10-21. Final local ZIP is authoritative; updated v3 Issue/PR receipts succeeded through API as jieruiz",
   "github_receipt_url": "https://github.com/rayggxia-workspace/pbit_kings/issues/5#issuecomment-6288589341",
   "github_readback_head": "a875049351495361e2bf47959df590dd51d149d6",
-  "github_readback_pr": "last readback: open draft, not merged; v3 status to be refreshed",
+  "github_readback_pr": "2026-10-21: open draft, not merged; v3 local delivery and actual v2 results recorded in body, source push explicitly pending",
   "base_commit": "05571587a8895d644f73c767bda02fa146ecedca",
   "package": "backend_pll_modes_20261021_v3_scripts.zip",
   "package_storage": "existing authorized local a_P_BIT root; user uploads to original server project root",
@@ -43,5 +43,5 @@
   "full_uart_end_to_end": false,
   "power_estimated": false,
   "resources": "4 CPU / 8G, ordinary serial VCS, no FGP requirement",
-  "board_readback": "2026-10-20: Issue #5 visible projectItems.totalCount=0; no configured target board; sync pending"
+  "board_readback": "2026-10-21: Issue #5 visible projectItems.totalCount=0; no configured target board; sync pending"
 }
