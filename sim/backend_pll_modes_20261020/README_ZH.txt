@@ -1,6 +1,34 @@
 PLL 旁路、变频与上板流程后仿
-版本：20261020_pll_modes_v2
-日期：2026-10-20；跟踪：rayggxia-workspace/pbit_kings Issue #5
+版本：20261021_pll_modes_v3
+日期：2026-10-21；跟踪：rayggxia-workspace/pbit_kings Issue #5
+
+v3推荐续跑任务38230453，不重跑已完成部分：
+
+BASE=/public3/home/t6s011227/pbit_chimera_pipeline_20260920
+cd "$BASE"
+unzip -o backend_pll_modes_20261021_v3_scripts.zip
+cd backend_pll_modes_20261020
+grep -qx '20261021_pll_modes_v3' VERSION.txt
+python3 run.py verify .
+PREVIOUS_RESULT="$BASE/backend_pll_modes_20261020/results/38230453" BUILD_JOB= bash submit.sh switch
+
+新任务先按冻结的57项SHA重审38230453，修正有记录的历史probe字符串填充误判，
+再编译新网表testbench，只跑switch五档。复用旧模型探针，不重复bypass/errors/
+bus_legacy/bus_safe/pin_only。若只有原tar.gz，PREVIOUS_RESULT也支持该归档路径，
+且校验整个归档SHA。旧目录/原包必须保留原字节；修改过则拒绝复用。
+不复用旧v2二进制：新active-mode检查属于testbench代码变化，必须重新编译。
+只重审、不调用VCS的命令：
+  python3 source/reaudit_previous.py --previous "$BASE/backend_pll_modes_20261020/results/38230453" --out "$PWD/reviews/38230453_v3"
+已存在的review输出会拒绝覆盖，请保留上次结果或明确指定新的输出路径。
+
+v3修复两项测试台问题，未改DUT/SDF或厂商模型：
+  - 把当前已生效的active_mhz与目标mhz分离。尚未APPLY时，必须按旧模式检查。
+  - 用显式string变量输出probe标签，避免VCS对短条件分支补齐前导空格。
+真实结果与未完成范围见REVIEW_38230453_ZH.txt。历史重审只核实记录的回标证明，
+不重新测覆盖、不把v2数据冒称v3新仿真；最终summary标明historical_cases与performed_this_job。
+26项本地回归包含已下载v2原件重审、正反切换负例和续跑范围检查，真实v3 switch仍待运行。
+
+下方保留完整流程和v2诊断背景。若不复用旧结果，需要完整新跑，先unset PREVIOUS_RESULT。
 
 一、用途与边界
 
@@ -81,15 +109,15 @@ N=24、SELECT=0，PLL模式VCO为600 MHz；150 MHz改变OD，旁路置BP。
 
 四、上传并运行
 
-只上传 backend_pll_modes_20261020_v2_scripts.zip 到原服务器项目根目录。
+只上传 backend_pll_modes_20261021_v3_scripts.zip 到原服务器项目根目录。
 网表/SDF/库沿用已有位置，无需重复上传。包里有全部新testbench及流程代码，
 没有厂商模型/工艺库/芯片网表；它们需继续使用服务器已上传版本。
 
 BASE=/public3/home/t6s011227/pbit_chimera_pipeline_20260920
 cd "$BASE"
-unzip -o backend_pll_modes_20261020_v2_scripts.zip
+unzip -o backend_pll_modes_20261021_v3_scripts.zip
 cd backend_pll_modes_20261020
-grep -qx '20261020_pll_modes_v2' VERSION.txt
+grep -qx '20261021_pll_modes_v3' VERSION.txt
 python3 run.py verify .
 bash submit.sh all
 
@@ -110,7 +138,7 @@ VCS延时来自选定SDF；DB/SPEF只用于输入版本核验，没有运行PT/�
 若同一脚本、同一corner已有成功编译，仅重跑剩余项可严格复用：
   BUILD_JOB="$BASE/backend_pll_modes_20261020/results/旧JOBID/build" bash submit.sh errors
 源/设置/输入哈希或corner不一致会拒绝，不会静默用旧二进制。
-不能把38227554的v1 build用于v2，必须重新编译。v2同版本的quick与all可复用。
+不能把38227554的v1或38230453的v2 build用于v3，必须重新编译。同版本才可严格复用。
 保持旧build及其输入/符号链接目标，不要运行中删除。
 
 默认输入：$BASE/backend_inputs_261014。

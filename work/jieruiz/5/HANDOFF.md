@@ -1,5 +1,44 @@
 # PLL Mode Validation Handoff
 
+## Latest: v3 Switch-Only Continuation, 2026-10-21
+
+Reviewed actual v2 job38230453, archive SHA256
+a04394f619986ccb1a79a3097a7d53eec5aa9520e4fe6d2f17ff1299ae30bb9c.
+All33 v2 source identities matched. Cold25 bypass completed pin UART/compute/
+full3200-bit snapshot; complete40ns period,20.20/19.80ns pulses,reference lag
+0.18..0.19ns. Safe and no-injection controls raw timing0, legacy reproduces the
+same30ps hold within60ps of handoff. A VCS packed-string padding bug made the
+v2 probe audit incorrectly fail scope; raw trace supports injection causality.
+Standalone original1ps and matched10ps vendor models both reproduce6 inf warnings
+and6 runt pulses (1ps vs10ps), independently of the chip/SDF.
+
+Switch stopped before its third APPLY: target mhz changed25 while active clock
+was still150. The new reference checker was incorrectly enabled by target mode.
+v3 separates confirmed active_mhz, adds tested reference-guard unit and explicit
+string labels. No DUT/SDF/vendor behavior changes and no new timing waiver.
+errors18 checks still pass, full snapshot200 words known;4540 distinct MAC E
+setuphold events occur1603265.86..1603266.24ns after reset assertion1603263.27,
+well before PLL EN-off1603421.82. No extra active-window event, but this is not
+proof all affected internal registers refill or STA is clean. Backend review stays.
+
+26 local tests PASS49.86s, including actual frozen v2 archive re-audit without EDA
+and an orchestration fixture checking only one build/switch with no model rerun.
+Frozen57-input index prevents reuse of modified/wrong evidence. Historical
+padding normalization is documented and leaves all raw bytes unchanged; raw
+negative-control failure remains explicit. Small local re-audit output:
+result_pipeline/PLL_38230453_REAUDIT_v3 (outside this checkout), no large extract.
+
+Next user run: upload backend_pll_modes_20261021_v3_scripts.zip, verify
+VERSION20261021_pll_modes_v3 and manifest, then
+PREVIOUS_RESULT=/public3/home/t6s011227/pbit_chimera_pipeline_20260920/backend_pll_modes_20261020/results/38230453 BUILD_JOB= bash submit.sh switch
+Only switch is simulated; previous five cases/model probes are hash-checked and
+re-audited. New source means a new chip executable must compile; do not reuse v2
+build. Combined summary explicitly distinguishes historical vs new simulation.
+Use the original tar.gz as PREVIOUS_RESULT if the result directory is archived.
+Historical re-audit checks recorded coverage provenance, not current binaries or
+fresh coverage; licensing inputs and raw archives remain outside Git.
+Publication/ZIP identity is recorded in DELIVERY.json. Below is preserved history.
+
 ## Latest: v2 Suspect Diagnostics, 2026-10-20
 
 Validated v2 source commit7cd8c8b6b4309012cb285c6d8f42c5e61b3c97db;

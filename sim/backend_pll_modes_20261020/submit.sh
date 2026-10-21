@@ -8,6 +8,7 @@ export DIAG_DEBUG="${DIAG_DEBUG:-minimal}" MAX_WALL_HOURS="${MAX_WALL_HOURS:-0}"
 export INPUT_DIR="${INPUT_DIR:-$(dirname "$ROOT")/backend_inputs_261014}"
 export CHECK_JOB="${CHECK_JOB:-$(dirname "$ROOT")/backend_fast_20261018/results/38117744}"
 export BUILD_JOB="${BUILD_JOB:-}"
+export PREVIOUS_RESULT="${PREVIOUS_RESULT:-}"
 "$PYTHON_BIN" "$ROOT/run.py" verify "$ROOT"
 "$PYTHON_BIN" "$ROOT/run.py" validate "$MODE_CASES" "$CORNER"
 [[ "$CPUS" =~ ^[1-9][0-9]*$ ]] || exit 2

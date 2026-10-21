@@ -59,3 +59,16 @@ def runtime_errors(root,text):
         if m and m.group(1) not in REVIEW_CODES:
             if len(rejected)<20: rejected.append(line.strip())
     return rejected
+
+
+def historical_binding(build,case):
+    build=Path(build);case=Path(case);native(build)
+    proof=load(case/'coverage_binding.json')
+    for field,name in (('build_identity_sha256','BUILD_COMPLETE.json'),('checkpoint_sha256','checkpoint.json'),
+                       ('native_report_sha256','sdf_native_coverage.txt')):
+        if proof.get(field)!=sha(build/name):raise ValueError('Historical coverage mismatch '+field)
+    if sha(case/'sdf_native_coverage.txt')!=proof['native_report_sha256']:
+        raise ValueError('Historical case coverage bytes mismatch')
+    proof.update(historical_reaudit=True,live_executable_rechecked=False,
+        historical_note='Rechecked recorded build/SDF provenance only; no EDA execution or fresh native coverage measurement.')
+    return proof

@@ -1,5 +1,6 @@
 """Local unit tests only; synthetic DUT is never a postlayout proof."""
 import ast
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -17,6 +18,7 @@ import run
 import build_driver
 import model_probe
 import diagnose_suspects
+import reaudit_previous
 from precision import convert
 
 
@@ -341,6 +343,118 @@ end
 endmodule
 ''')
             out=self.xsim(p,'t',[p/'tb.sv'],True);self.assertIn('HANDOFF_SLOT_PASS',out)
+
+    def test_reference_guard_uses_active_mode_not_target(self):
+        for bad in (False,True):
+            with self.directory() as folder:
+                p=Path(folder)
+                (p/'tb.sv').write_text('''`timescale 1ns/10ps
+module t;
+ reg ref_clk=0,old_clk=0,stable=0,select_bp=0;
+ integer active_mhz=150,target_mhz=150;
+ always #20 ref_clk=~ref_clk;
+ always #3.33 old_clk=~old_clk;
+ wire bp_clk;assign #(0.2,0.4)bp_clk=ref_clk;
+ wire clk=select_bp?bp_clk:old_clk;
+ pll_bypass_reference_guard guard(ref_clk,clk,1'b1,stable,active_mhz==25);
+ initial begin
+  #1;stable=1;#99;target_mhz=25;#100;
+  if(guard.minimum!=1.0e9)$fatal(1,"Premature target-mode check");
+  stable=0;select_bp=1;#40;active_mhz=25;stable=1;#200;
+  if(guard.minimum<0.19 || guard.maximum>0.41)$fatal(1,"Reference lag check missing");
+  target_mhz=300;ACTION #200;
+  $display("REF_GUARD_ACTIVE_MODE_PASS");$finish;
+ end
+endmodule
+'''.replace('ACTION','select_bp=0;' if bad else ''))
+                exe=self.compile(p,'t',[ROOT/'source/pll_clock_guard.sv',p/'tb.sv'])
+                out=self.execute(p,exe)
+                self.assertIn('BYPASS_REFERENCE_MISMATCH' if bad else 'REF_GUARD_ACTIVE_MODE_PASS',out)
+                if bad:self.assertNotIn('REF_GUARD_ACTIVE_MODE_PASS',out)
+        text=(ROOT/'source/tb_gate_pipeline_maxcut_lite.sv').read_text()
+        self.assertIn('env.dut.core_rst_n,stable,active_mhz==25)',text)
+        self.assertIn('active_mhz=mhz;',text)
+
+    def test_historical_padding_is_only_normalized_for_known_probe_label(self):
+        for label in ('           none','        other'):
+            with self.directory() as folder:
+                p=Path(folder);self.fixture(p,'bus_safe')
+                result=json.loads((p/'mode_result.json').read_text());result['release']='20261020_pll_modes_v2'
+                (p/'mode_result.json').write_text(json.dumps(result))
+                rows=a.rows(p/'epochs.jsonl');rows[0]['tiny_problem']=label
+                (p/'epochs.jsonl').write_text(json.dumps(rows[0])+'\n')
+                raw=(p/'epochs.jsonl').read_bytes()
+                with mock.patch.object(a,'historical_binding',return_value={'MOCK':'not fresh coverage'}):
+                    r=a.audit(p,'bus_safe','WC',p/'mock',historical=True)
+                self.assertEqual(bool(r['failures']),label.endswith('other'))
+                self.assertEqual((p/'epochs.jsonl').read_bytes(),raw)
+                self.assertEqual(len(r['serialization_notes']),1 if label.endswith('none') else 0)
+
+    def test_actual_v2_archive_reaudit_without_eda(self):
+        base=Path(os.environ.get('PBIT_WORKSPACE',str(ROOT.parents[3]))).parent
+        source=base/'10月_MPW/APR_results/backend_pll_modes_38230453.tar.gz'
+        if not source.is_file():self.skipTest('Frozen v2 result archive not in scripts package')
+        with self.directory() as folder:
+            p=Path(folder);before=reaudit_previous.sha(source)
+            with mock.patch.object(model_probe.subprocess,'call',side_effect=AssertionError('No EDA in re-audit')):
+                reports,model,index=reaudit_previous.review(source,p/'review')
+            by={r['case']:r for r in reports}
+            self.assertTrue(by['bus_legacy']['negative_control_reproduced'])
+            self.assertEqual(by['bus_safe']['failures'],[])
+            self.assertEqual(by['pin_only']['failures'],[])
+            self.assertEqual(by['bypass']['failures'],[])
+            self.assertEqual(by['errors']['reset_window_events'],4540)
+            verdict=json.loads((p/'review/reaudit_summary.json').read_text())['bus_handoff_verdict']
+            self.assertEqual(verdict,'INJECTION_ARTIFACT_SUPPORTED_BY_AB_CONTROLS')
+            self.assertEqual(reaudit_previous.sha(source),before)
+            self.assertTrue(model['historical_reuse']);self.assertEqual(len(index['files']),57)
+            with self.assertRaises(ValueError):reaudit_previous.review(source,p/'review')
+
+    def test_reaudit_rejects_unrecognized_archive(self):
+        with self.directory() as folder:
+            p=Path(folder);source=p/'bad.tar.gz';source.write_bytes(b'wrong result')
+            with self.assertRaisesRegex(ValueError,'SHA256'):reaudit_previous.review(source,p/'out')
+            self.assertFalse((p/'out').exists())
+
+    def test_continuation_runs_only_switch_and_skips_model_probe(self):
+        with self.directory() as folder:
+            p=Path(folder);job=p/'job';job.mkdir();snapshot=p/'snapshot';(snapshot/'source').mkdir(parents=True)
+            inherited=[dict(case=c,status='FUNCTIONAL_PASS_REVIEW_REQUIRED',failures=[],
+                functional_evidence_complete=True,historical_reaudit=True,timing_events=[],epochs=[])
+                for c in reaudit_previous.CASES]
+            model=dict(variants=[dict(status='MODEL_PROBE_COMPLETE')]*2,historical_reuse=True)
+            checkpoint=b'unit checkpoint\n'
+            index=dict(files={'build/checkpoint.json':hashlib.sha256(checkpoint).hexdigest()})
+            calls=[]
+            def command(args,dst,env):
+                calls.append([str(x) for x in args])
+                if dst.name=='build':
+                    (dst/'checkpoint.json').write_bytes(checkpoint)
+                    (dst/'simv').write_bytes(b'not executable test fixture')
+                    (dst/'simulation.sdf').write_bytes(b'no SDF in unit test')
+                    (dst/'simv.daidir').mkdir()
+            live=dict(case='switch',status='FUNCTIONAL_PASS_NOT_SIGNOFF',failures=[],
+                functional_evidence_complete=True,timing_events=[],epochs=[])
+            old=Path.cwd()
+            try:
+                os.chdir(str(job))
+                with mock.patch.dict(os.environ,{'MODE_SNAPSHOT':str(snapshot),'MODE_CASES':'switch',
+                        'CORNER':'WC','PREVIOUS_RESULT':'frozen_previous'}),\
+                     mock.patch.object(run,'verify',return_value={}),\
+                     mock.patch.object(run,'review',return_value=(inherited,model,index)),\
+                     mock.patch.object(run,'command',side_effect=command),\
+                     mock.patch.object(run,'native'),mock.patch.object(run,'bind'),\
+                     mock.patch.object(run,'audit',return_value=live),\
+                     mock.patch.object(run,'model_probe',side_effect=AssertionError('Do not rerun passed model probes')),\
+                     mock.patch.object(Path,'symlink_to'):
+                    run.main()
+            finally:os.chdir(str(old))
+            self.assertEqual(len(calls),2)
+            self.assertTrue(any('+CASE=switch' in command for command in calls))
+            result=json.loads((job/'diagnostic_summary.json').read_text())
+            self.assertEqual(result['performed_this_job'],['switch'])
+            self.assertEqual(result['historical_cases'],list(reaudit_previous.CASES))
+            self.assertFalse(result['chip_timing_pass'])
 
     def test_real_host_codec_at_three_bauds(self):
         with self.directory() as folder:

@@ -1,5 +1,5 @@
 """Frozen modes; MHz and UART baud describe different clocks."""
-RELEASE='20261020_pll_modes_v2'
+RELEASE='20261021_pll_modes_v3'
 MODES={300:0x0218,150:0x0418,25:0x0a18}
 PLANS={
     'bypass':[('cold_bypass',25)],

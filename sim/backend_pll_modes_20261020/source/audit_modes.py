@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import re
 from collections import Counter
-from coverage_evidence import bind,runtime_errors
+from coverage_evidence import bind,historical_binding,runtime_errors
 from sync_policy import ALLOWED
 from plan import RELEASE,PLANS,MODES,ERROR_CHECKS,PROBES
 
@@ -77,18 +77,26 @@ def partial(root,case,error):
     return report
 
 
-def audit(root,case,selected_corner,build):
+def audit(root,case,selected_corner,build,historical=False):
     root=Path(root);fail=[]
     result=json.loads((root/'mode_result.json').read_text())
     epochs=rows(root/'epochs.jsonl');tx=rows(root/'transactions.jsonl');checks=rows(root/'checks.jsonl')
     trace=(root/'mode_trace.csv').read_text();text=(root/'simulation.log').read_text(errors='replace')
     expected=PLANS[case]
     probe=case in PROBES
-    for key,value in dict(release=RELEASE,case=case,corner=selected_corner,status='FUNCTIONAL_PASS',
+    expected_release='20261020_pll_modes_v2' if historical else RELEASE
+    notes=[]
+    for key,value in dict(release=expected_release,case=case,corner=selected_corner,status='FUNCTIONAL_PASS',
                           epochs=len(expected),power_estimated=False,timing_signoff=False).items():
         if result.get(key)!=value:fail.append('Bad result '+key)
     if len(epochs)!=len(expected):fail.append('Missing mode epochs')
     for i,((name,f),row) in enumerate(zip(expected,epochs),1):
+        row=dict(row)
+        label=row.get('tiny_problem')
+        if historical and probe and isinstance(label,str) and label.strip(' ')=='none' and label!='none':
+            notes.append(dict(epoch=i,field='tiny_problem',raw=label,normalized='none',
+                reason='VCS fixed-width packed-string conditional padded the shorter branch; raw input unchanged'))
+            row['tiny_problem']='none'
         fields=dict(epoch=i,name=name,mhz=f,config=MODES[f],core_baud=f*1000000//500,
                     tiny_problem='none' if probe else 'two_node_maxcut',snapshot_mask=0 if probe else 17,
                     snapshot_expected=0 if probe else 1,sweeps=0 if probe else 2,actual_majority=1,
@@ -215,14 +223,15 @@ def audit(root,case,selected_corner,build):
     warnings=re.findall(r'(?m)^Warning-\[[^\]]+\][^\n]*',text)
     rejected=runtime_errors(root,text)
     if rejected:fail.append('SDF binding errors')
-    proof=bind(build,root)
+    proof=historical_binding(build,root) if historical else bind(build,root)
     status='FAILURES_NEED_ACTION' if fail else ('FUNCTIONAL_PASS_REVIEW_REQUIRED' if unexpected or warnings else 'FUNCTIONAL_PASS_NOT_SIGNOFF')
     report=dict(status=status,case=case,corner=selected_corner,functional_evidence_complete=functional_ok,
         failures=fail,result=result,epochs=epochs,transport_counts=dict(counts),timing_events=events,
         raw_timing_events=len(events),reset_window_events=sum(e['reset_window'] for e in unexpected),
         outside_reset_events=len(outside),existing_profile_events=len(events)-len(unexpected),
         model_and_runtime_warnings=warnings,short_clock_pulses=pulses,reset_windows_ns=intervals,sdf_coverage=proof,
-        clock_metrics=metrics,probe_only=probe,timing_signoff=False,analog_lock_verified=False,full_uart_end_to_end=False,
+        clock_metrics=metrics,probe_only=probe,historical_reaudit=historical,serialization_notes=notes,
+        timing_signoff=False,analog_lock_verified=False,full_uart_end_to_end=False,
         clock_policy='Period +/-40ps; high/low +/-10%; bypass reference lag 0..2ns. Diagnostic limits, not foundry WIDTH signoff.')
     report.update(injection_evidence(trace,events))
     details=report['outside_details']

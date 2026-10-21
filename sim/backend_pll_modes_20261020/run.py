@@ -13,6 +13,7 @@ from plan import cases,corner,PLANS,RELEASE
 from audit_modes import audit,partial
 from model_probe import run as model_probe
 from diagnose_suspects import summarize
+from reaudit_previous import review,compact
 from coverage_evidence import sha,native,bind
 
 
@@ -42,10 +43,17 @@ def main():
     snapshot=Path(os.environ['MODE_SNAPSHOT']).resolve(); root=Path.cwd()
     manifest=verify(snapshot); selected=cases(os.environ.get('MODE_CASES','all')); sdf_corner=corner(os.environ['CORNER'])
     save(root/'source_manifest.json',manifest)
+    previous=os.environ.get('PREVIOUS_RESULT','')
+    inherited=[];model=None;prior_index=None
+    if previous:
+        if selected!=['switch'] or sdf_corner!='WC':
+            raise ValueError('PREVIOUS_RESULT is only supported for WC switch continuation')
+        inherited,model,prior_index=review(previous,root/'previous_review')
     save(root/'run_config.json',dict(release=RELEASE,cases=selected,mode_plans={c:PLANS[c] for c in selected},
         settings_baseline_mhz=300,supported_mode_mhz=[300,150,25],precision='10ps',sdf_corner=sdf_corner,parallel='serial',
         full_uart_end_to_end=False,power_estimated=False,timing_signoff=False,
-        old_passed_tests_rerun=False))
+        old_passed_tests_rerun=False,previous_result=previous,
+        historical_cases=[r['case'] for r in inherited],performed_this_job=selected))
     build=root/'build'; build.mkdir()
     shutil.copytree(str(snapshot/'source'),str(build/'source'))
     save(build/'source_manifest.json',manifest)
@@ -53,11 +61,15 @@ def main():
     (root/'stage.txt').write_text('build\n')
     command([sys.executable,'-u','source/build_driver.py'],build,env)
     native(build)
-    try:
-        model=model_probe(root/'model_probe',build,snapshot)
-    except Exception as error:
-        model=dict(status='MODEL_PROBE_EXECUTION_FAILED',error=str(error),timing_signoff=False)
-        save(root/'model_probe_failure.json',model)
+    if previous:
+        if sha(build/'checkpoint.json')!=prior_index['files']['build/checkpoint.json']:
+            raise ValueError('New switch input checkpoint differs from reviewed previous result')
+    else:
+        try:
+            model=model_probe(root/'model_probe',build,snapshot)
+        except Exception as error:
+            model=dict(status='MODEL_PROBE_EXECUTION_FAILED',error=str(error),timing_signoff=False)
+            save(root/'model_probe_failure.json',model)
     reports=[]
     for case in selected:
         (root/'stage.txt').write_text(case+'\n')
@@ -79,11 +91,13 @@ def main():
             (dst/'diagnostic_failure.txt').write_text(str(error)+'\n'+traceback.format_exc())
             reports.append(partial(dst,case,error))
         save(root/'diagnostic_progress.json',reports)
-    diagnosis=summarize(root,reports,model)
-    failed=any(r['failures'] and not r.get('negative_control_reproduced') for r in reports)
+    combined=inherited+reports
+    diagnosis=summarize(root,combined,model)
+    failed=any(r['failures'] and not r.get('negative_control_reproduced') for r in combined)
     failed=failed or 'variants' not in model or any(v['status']!='MODEL_PROBE_COMPLETE' for v in model.get('variants',[]))
     save(root/'diagnostic_summary.json',dict(status='FAILURES_NEED_ACTION' if failed else 'DIAGNOSTICS_COMPLETE_REVIEW_REQUIRED',
-         cases=reports,diagnostic_complete=True,chip_timing_pass=False,timing_signoff=False,
+         cases=[compact(r) for r in combined],diagnostic_complete=True,chip_timing_pass=False,timing_signoff=False,
+         historical_cases=[r['case'] for r in inherited],performed_this_job=selected,
          bus_handoff_verdict=diagnosis['bus_handoff_verdict'],
          note='Legacy negative-control failures are explicitly retained, not chip PASS. Reset/model events require review.'))
     (root/'DIAGNOSTICS_COMPLETE.txt').write_text('PLL modes execution completed; not chip timing PASS.\n')

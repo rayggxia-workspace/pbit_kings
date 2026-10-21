@@ -56,3 +56,22 @@ module pll_clock_guard #(parameter integer ID=0)(
             $fatal(1,"CLOCK_GUARD_STOPPED id=%0d",ID);
     end
 endmodule
+
+module pll_bypass_reference_guard(input wire ref_clk,clk,rst_n,active,bypass_active);
+    realtime ref_rise=-1,ref_fall=-1,minimum=1.0e9,maximum=0;
+    always @(posedge active) begin minimum=1.0e9; maximum=0; end
+    always @(ref_clk) begin
+        if (ref_clk===1) ref_rise=$realtime;
+        if (ref_clk===0) ref_fall=$realtime;
+    end
+    always @(clk) begin : REFERENCE_EDGE
+        realtime lag;
+        if (active && bypass_active && rst_n===1) begin
+            lag=$realtime-((clk===1)?ref_rise:ref_fall);
+            if (clk!==ref_clk || lag<0 || lag>2.0)
+                $fatal(1,"BYPASS_REFERENCE_MISMATCH lag=%f",lag);
+            if (lag<minimum) minimum=lag;
+            if (lag>maximum) maximum=lag;
+        end
+    end
+endmodule

@@ -4,17 +4,18 @@ module tb_gate_pipeline_maxcut_lite;
     `include "settings.svh"
     gate_pipeline_env env();
     string case_name,epoch_name,selected_corner;
-    integer epoch=0,mhz=300,trace_fd,epoch_fd,uart_fd,check_fd,clock_fd,checks=0;
+    integer epoch=0,mhz=300,active_mhz=0,trace_fd,epoch_fd,uart_fd,check_fd,clock_fd,checks=0;
     integer pll_pin_count=0,core_pin_count=0,pll_fast_count=0;
     integer phase_pll_pins,phase_core_pins;
     bit stable=0,expect_reset=0,core_busy_before_apply=0;
     realtime core_half=1.666666667,test_half=53.333333333;
     realtime trace_until=0,t_reset=-1,t_off=-1,t_on=-1,t_release=-1;
-    realtime ref_rise=-1,ref_fall=-1,bypass_lag_min=1.0e9,bypass_lag_max=0;
     bit probe_case=0;
     reg [31:0] value;
     pll_clock_guard #(.ID(0)) core_guard(env.dut.core_clk,env.dut.core_rst_n,stable,core_half);
     pll_clock_guard #(.ID(1)) test_guard(env.dut.u_pll.CKTST,env.dut.core_rst_n,stable,test_half);
+    pll_bypass_reference_guard bypass_guard(env.dut.ref_clk,env.dut.core_clk,
+        env.dut.core_rst_n,stable,active_mhz==25);
 
     task automatic trace(input string name,input logic [31:0] v);
         if (trace_fd) begin
@@ -38,20 +39,10 @@ module tb_gate_pipeline_maxcut_lite;
     always @(env.dut.u_pll.N) trace("pll_n",{24'd0,env.dut.u_pll.N});
     always @(env.dut.u_pll.OD) trace("pll_od",{30'd0,env.dut.u_pll.OD});
     always @(env.dut.ref_clk) begin
-        if (env.dut.ref_clk===1) ref_rise=$realtime;
-        if (env.dut.ref_clk===0) ref_fall=$realtime;
         if ($realtime<=trace_until) trace("ref_clk",{31'd0,env.dut.ref_clk});
     end
-    always @(env.dut.core_clk) begin : BYPASS_EDGE
-        realtime lag;
+    always @(env.dut.core_clk) begin
         if ($realtime<=trace_until) trace("core_clk",{31'd0,env.dut.core_clk});
-        if (stable && mhz==25 && env.dut.core_rst_n===1) begin
-            lag=$realtime-((env.dut.core_clk===1)?ref_rise:ref_fall);
-            if (env.dut.core_clk!==env.dut.ref_clk || lag<0 || lag>2.0)
-                $fatal(1,"BYPASS_REFERENCE_MISMATCH lag=%f",lag);
-            if (lag<bypass_lag_min) bypass_lag_min=lag;
-            if (lag>bypass_lag_max) bypass_lag_max=lag;
-        end
     end
     always @(env.dut.u_pll.CKOUT1)
         if ($realtime<=trace_until) trace("pll_ckout",{31'd0,env.dut.u_pll.CKOUT1});
@@ -134,7 +125,6 @@ module tb_gate_pipeline_maxcut_lite;
     task automatic begin_epoch(input string name,input integer f,input bit resetting);
         stable=0; epoch++; epoch_name=name; mhz=f; expect_reset=resetting;
         t_reset=-1; t_off=-1; t_on=-1; t_release=-1;
-        bypass_lag_min=1.0e9; bypass_lag_max=0;
         phase_pll_pins=pll_pin_count; phase_core_pins=core_pin_count;
         $display("[PLL_MODE_BEGIN] epoch=%0d name=%s mhz=%0d",epoch,name,f);
     endtask
@@ -150,6 +140,9 @@ module tb_gate_pipeline_maxcut_lite;
         if (!cold && (t_reset<0 || t_off<0 || t_off-t_reset<100.0))
             $fatal(1,"APPLY did not hold core reset before PLL disable reset=%f off=%f",t_reset,t_off);
         env.check_startup_health;
+        // Target changes at begin_epoch; the active clock changes only after
+        // APPLY and the checked startup/reset sequence have completed.
+        active_mhz=mhz;
         core_half=500.0/mhz; env.CORE_BIT_NS=500000.0/mhz;
         stable=1;
         repeat (12) @(negedge env.dut.core_clk);
@@ -231,10 +224,13 @@ module tb_gate_pipeline_maxcut_lite;
         check("tiny_maxcut_run_and_snapshot");
     endtask
     task automatic record_epoch;
+        string problem_label;
+        if (probe_case) problem_label="none";
+        else problem_label="two_node_maxcut";
         if (core_guard.edges<20 || test_guard.edges<4) $fatal(1,"Insufficient clock observations");
-        $fdisplay(epoch_fd,"{\"epoch\":%0d,\"name\":\"%s\",\"mhz\":%0d,\"config\":%0d,\"core_baud\":%0d,\"core_pin_transactions\":%0d,\"pll_pin_transactions\":%0d,\"core_half_min_ns\":%.3f,\"core_half_max_ns\":%.3f,\"test_half_min_ns\":%.3f,\"test_half_max_ns\":%.3f,\"core_edges\":%0d,\"test_edges\":%0d,\"enable_to_release_ns\":%.3f,\"reset_before_disable_ns\":%.3f,\"tiny_problem\":\"%s\",\"snapshot_mask\":%0d,\"snapshot_expected\":%0d,\"sweeps\":%0d,\"actual_majority\":1,\"snapshot_words_checked\":%0d}",epoch,epoch_name,mhz,config_for(mhz),mhz*1000000/500,core_pin_count-phase_core_pins,pll_pin_count-phase_pll_pins,core_guard.minimum,core_guard.maximum,test_guard.minimum,test_guard.maximum,core_guard.edges,test_guard.edges,t_release-t_on,t_off-t_reset,probe_case?"none":"two_node_maxcut",probe_case?0:17,probe_case?0:1,probe_case?0:2,probe_case?0:100);
+        $fdisplay(epoch_fd,"{\"epoch\":%0d,\"name\":\"%s\",\"mhz\":%0d,\"config\":%0d,\"core_baud\":%0d,\"core_pin_transactions\":%0d,\"pll_pin_transactions\":%0d,\"core_half_min_ns\":%.3f,\"core_half_max_ns\":%.3f,\"test_half_min_ns\":%.3f,\"test_half_max_ns\":%.3f,\"core_edges\":%0d,\"test_edges\":%0d,\"enable_to_release_ns\":%.3f,\"reset_before_disable_ns\":%.3f,\"tiny_problem\":\"%s\",\"snapshot_mask\":%0d,\"snapshot_expected\":%0d,\"sweeps\":%0d,\"actual_majority\":1,\"snapshot_words_checked\":%0d}",epoch,epoch_name,mhz,config_for(mhz),mhz*1000000/500,core_pin_count-phase_core_pins,pll_pin_count-phase_pll_pins,core_guard.minimum,core_guard.maximum,test_guard.minimum,test_guard.maximum,core_guard.edges,test_guard.edges,t_release-t_on,t_off-t_reset,problem_label,probe_case?0:17,probe_case?0:1,probe_case?0:2,probe_case?0:100);
         $fflush(epoch_fd);
-        $fdisplay(clock_fd,"{\"epoch\":%0d,\"signal\":\"core\",\"period_min_ns\":%.3f,\"period_max_ns\":%.3f,\"high_min_ns\":%.3f,\"high_max_ns\":%.3f,\"low_min_ns\":%.3f,\"low_max_ns\":%.3f,\"periods\":%0d,\"bypass_lag_min_ns\":%.3f,\"bypass_lag_max_ns\":%.3f}",epoch,core_guard.period_min,core_guard.period_max,core_guard.high_min,core_guard.high_max,core_guard.low_min,core_guard.low_max,core_guard.periods,bypass_lag_min,bypass_lag_max);
+        $fdisplay(clock_fd,"{\"epoch\":%0d,\"signal\":\"core\",\"period_min_ns\":%.3f,\"period_max_ns\":%.3f,\"high_min_ns\":%.3f,\"high_max_ns\":%.3f,\"low_min_ns\":%.3f,\"low_max_ns\":%.3f,\"periods\":%0d,\"bypass_lag_min_ns\":%.3f,\"bypass_lag_max_ns\":%.3f}",epoch,core_guard.period_min,core_guard.period_max,core_guard.high_min,core_guard.high_max,core_guard.low_min,core_guard.low_max,core_guard.periods,bypass_guard.minimum,bypass_guard.maximum);
         $fdisplay(clock_fd,"{\"epoch\":%0d,\"signal\":\"test\",\"period_min_ns\":%.3f,\"period_max_ns\":%.3f,\"high_min_ns\":%.3f,\"high_max_ns\":%.3f,\"low_min_ns\":%.3f,\"low_max_ns\":%.3f,\"periods\":%0d}",epoch,test_guard.period_min,test_guard.period_max,test_guard.high_min,test_guard.high_max,test_guard.low_min,test_guard.low_max,test_guard.periods);
         $fflush(clock_fd);
     endtask
@@ -339,7 +335,7 @@ module tb_gate_pipeline_maxcut_lite;
         stable=0;
         fd=$fopen("mode_result.json","w");
         if (!fd) $fatal(1,"Cannot write result");
-        $fdisplay(fd,"{\"release\":\"20261020_pll_modes_v2\",\"case\":\"%s\",\"corner\":\"%s\",\"status\":\"FUNCTIONAL_PASS\",\"epochs\":%0d,\"checks\":%0d,\"pll_pin_transactions\":%0d,\"core_pin_transactions\":%0d,\"pll_directed_transactions\":%0d,\"power_estimated\":false,\"timing_signoff\":false,\"probe_only\":%0d,\"safe_bus_handoff\":%0d}",case_name,selected_corner,epoch,checks,pll_pin_count,core_pin_count,pll_fast_count,probe_case,env.safe_bus_handoff);
+        $fdisplay(fd,"{\"release\":\"20261021_pll_modes_v3\",\"case\":\"%s\",\"corner\":\"%s\",\"status\":\"FUNCTIONAL_PASS\",\"epochs\":%0d,\"checks\":%0d,\"pll_pin_transactions\":%0d,\"core_pin_transactions\":%0d,\"pll_directed_transactions\":%0d,\"power_estimated\":false,\"timing_signoff\":false,\"probe_only\":%0d,\"safe_bus_handoff\":%0d}",case_name,selected_corner,epoch,checks,pll_pin_count,core_pin_count,pll_fast_count,probe_case,env.safe_bus_handoff);
         $fclose(fd); $fflush();
         $display("[PLL_MODES_FUNCTIONAL] PASS case=%s epochs=%0d NOT_TIMING_SIGNOFF",case_name,epoch);
         $finish;

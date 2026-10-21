@@ -1,5 +1,23 @@
 # jieruiz progress
 
+## 2026-10-21 v2 Results and v3 Switch Continuation
+
+Issue5 / draftPR6, same branch/checkout. Actual38230453 v2 identities all33 match;
+cold25 bypass pin UART/compute/full snapshot PASS. Legacy30ps hold reproduces
+beside bus acquisition, safe/no-injection0 raw timing; historical VCS string
+padding caused false scope failure, now re-audited with57 exact input hashes.
+Independent original1ps and matched10ps PLL models reproduce inf/runt behavior.
+errors18 checks complete,4540 MAC E reset-window events retained; no extra active
+events, no timing-signoff claim. switch stopped due checker using target25 before
+APPLY instead of still-active150, not an observed chip BP switching failure.
+
+Local v3 fixes active-vs-target guard and explicit string serialization, adds
+immutable historical re-audit/continuation. 26 tests PASS, actual old archive
+re-audit succeeds without EDA or raw-byte edits. User should submit only WC switch
+with PREVIOUS_RESULT pointing at38230453; completed cases/model probes not rerun.
+New VCS switch evidence pending; no DUT/SDF/vendor behavior patch, no power rerun.
+Local source/package/publication states in DELIVERY.json and work/jieruiz/5/HANDOFF.md.
+
 ## 2026-10-20 PLL v2 Suspect Diagnostics
 
 Issue5 / draft PR6, same task branch and sparse checkout. User requested scripts
